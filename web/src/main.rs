@@ -1,6 +1,5 @@
 use std::error::Error;
 use crate::app_context::AppContext;
-use crate::gdrive_provider::provider::{DataSourceProvider, GoogleDriveDataSource};
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use bytes::Bytes;
 use futures::stream;
@@ -15,6 +14,9 @@ use log::debug;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
 use config::config::AppConfig;
 use config::resolve_file_path::{resolve_config_file_path, resolve_first_path};
+use gdrive_provider::data_source::DataSource;
+use crate::gdrive_provider::google_data_source::GoogleDriveDataSource;
+use crate::gdrive_provider::google_drive_hub_adapter_builder::GoogleDriveHubAdapterBuilder;
 
 mod gdrive_provider;
 mod utils;
@@ -125,11 +127,16 @@ async fn get_datasource_provider(config: &AppConfig) -> Arc<GoogleDriveDataSourc
     let gdrive_credentials_file = resolve_first_path(&[config.gdrive_credentials_file.as_str(),CREDENTIALS_FILE_HOME]).unwrap();
     debug!("Using gdrive credentials file: {:?}", gdrive_credentials_file);
 
+    let builder = GoogleDriveHubAdapterBuilder::new()
+        .with_credentials(gdrive_credentials_file) 
+        .with_scope("https://www.googleapis.com/auth/drive.readonly".to_string());
+
+    let hub_adapter = builder.build().await.expect("Failed to build GoogleDriveHubAdapter");
+
     Arc::new(
-        //read file or the value from env variable specified by the first arg
-        GoogleDriveDataSource::new(gdrive_credentials_file.as_str(), config.gdrive_root_folder_id.as_str())
+        GoogleDriveDataSource::new(config.gdrive_root_folder_id.clone(), hub_adapter)
             .await
-            .expect("Failed to initialize GDriveProvider"),
+            .expect("Failed to initialize GoogleDriveDataSource"),
     )
 }
 
