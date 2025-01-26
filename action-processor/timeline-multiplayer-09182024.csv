@@ -1,0 +1,687 @@
+Time Stamp[Hr:Min:Sec],Action/Vital Name,SubAction Time[Min:Sec],SubAction Name,Score,Old Value,New Value,Username,Speech Command
+0:0:2,umich4(speech),,,,,,umich4,"BJP." 
+0:0:5,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:0:5,umich4(speech),,,,,,umich4,"All right, I'm going to clap real quick." 
+0:0:8,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:8,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:0:13,umich3(speech),,,,,,umich3,"OK, team, so let's get the patient on the monitor. Looks like we have bilateral IV access, I believe from what I'm seeing here. If I'm mistaken, then let's go ahead and get some more Ivs. Let's run a blood pressure as well. I see." 
+0:0:14,umich1(speech),,,,,,umich1,"We have. We have access." 
+0:0:17,umich1(speech),,,,,,umich1,"Yes, yes." 
+0:0:17,umich3(speech),,,,,,umich3,"NOMATCH: Speech could not be recognized." 
+0:0:18,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:0:19,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:23,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:24,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:0:24,umich1(speech),,,,,,umich1,"Patron, Dr." 
+0:0:24,umich3(speech),,,,,,umich3,"I think the we do great. So from the rhythm there, it looks like we're likely in BT, so let's get pads on please." 
+0:0:25,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:0:26,umich4(speech),,,,,,umich4,"Seki. Yep." 
+0:0:26,umich3(speech),,,,,,umich3,"Hmm." 
+0:0:28,umich3(speech),,,,,,umich3,"Is he responding at all?" 
+0:0:31,umich1(speech),,,,,,umich1,"He is not responsive." 
+0:0:33,umich3(speech),,,,,,umich3,"Up there, do we have a pulse?" 
+0:0:33,umich1(speech),,,,,,umich1,"Checking for both." 
+0:0:34,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:35,(1)V-Tach 2D(action),0:35,Pulse Check,100,,,umich1
+0:0:37,umich1(speech),,,,,,umich1,"There's upholstery at 180." 
+0:0:38,umich3(speech),,,,,,umich3,"Play." 
+0:0:38,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:39,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:0:40,umich1(speech),,,,,,umich1,"Yes, pulse 188 minutes." 
+0:0:40,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:0:44,umich3(speech),,,,,,umich3,"Thanks." 
+0:0:45,umich3(speech),,,,,,umich3,"OK, so if pads are on, let's go ahead and." 
+0:0:46,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:0:47,umich2(speech),,,,,,umich2,"Thanks." 
+0:0:49,HR_Waveform(vital),,,,CR_NSR,CR_VTach
+0:0:49,PR_Waveform(vital),,,,O2_NW,O2_PP
+0:0:49,RR_Waveform(vital),,,,CO2_Norm,CO2_CA
+0:0:49,HR(vital),,,,178,192
+0:0:49,RR(vital),,,,100,12
+0:0:49,PR(vital),,,,80,0
+0:0:49,BP(vital),,,,180,0
+0:0:49,ETCO2(vital),,,,40,18
+0:0:49,Temperature(vital),,,,97.8,98
+0:0:49,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:0:50,umich3(speech),,,,,,umich3,"Let's run a blood pressure if we didn't get one already, real quick." 
+0:0:54,(1)V-Tach 2D(action),0:54,Pulse Check,100,,,umich1
+0:0:54,umich1(speech),,,,,,umich1,"OK, patient has not seen that blood pressure is very thready pulse." 
+0:0:55,umich4(speech),,,,,,umich4,"Play." 
+0:0:58,umich1(speech),,,,,,umich1,"No, no, no, no, no, no, no, no, no." 
+0:1:3,umich3(speech),,,,,,umich3,"OK, so we still can't run 1, so let's do a synchronized cardio version as soon as possible at 200 joules please." 
+0:1:4,umich4(speech),,,,,,umich4,"Play." 
+0:1:4,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:1:9,umich2(speech),,,,,,umich2,"Am I supposed to do it?" 
+0:1:15,umich1(speech),,,,,,umich1,"Yeah, Fatima, if you take pressure left joystick button, you can teleport left joystick button and look up." 
+0:1:20,umich2(speech),,,,,,umich2,"MMM, yeah." 
+0:1:23,umich3(speech),,,,,,umich3,"NOMATCH: Speech could not be recognized." 
+0:1:24,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:1:24,umich1(speech),,,,,,umich1,"See that green, the green square there? Yeah, you can teleport over there. There you go. Great." 
+0:1:26,umich2(speech),,,,,,umich2,"I'm going there now." 
+0:1:27,umich3(speech),,,,,,umich3,"Nice." 
+0:1:30,umich2(speech),,,,,,umich2,"OK. And then you said can you say that again?" 
+0:1:31,(1)V-Tach 2D(action),1:31,Order EKG,100,,,umich3
+0:1:31,EKG,Error,Action-Should-Not-Be-Performed,Action-Was-Performed,Error-Triggered,umich3,(1)V-Tach 2D(action),Good CPR saves lives! Don't interrupt CPR for an EKG.,,,,,,
+0:1:31,umich3(speech),,,,,,umich3,"Then and then." 
+0:1:37,umich3(speech),,,,,,umich3,"Let's do a synchronized cardio version at 200 joules please." 
+0:1:39,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:1:41,umich2(speech),,,,,,umich2,"200 joules synchronized charging." 
+0:1:42,umich1(speech),,,,,,umich1,"732,350." 
+0:1:46,umich2(speech),,,,,,umich2,"OK." 
+0:1:47,umich1(speech),,,,,,umich1,"OK." 
+0:1:49,umich1(speech),,,,,,umich1,"All right." 
+0:1:49,umich2(speech),,,,,,umich2,"Tell me." 
+0:1:49,umich3(speech),,,,,,umich3,"Alright, everybody clear." 
+0:1:54,(1)V-Tach 2D(action),1:54,SYNCHRONIZED Shock 200J,100,,,umich2
+0:1:54,umich2(speech),,,,,,umich2,"OK, should I push?" 
+0:1:54,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:1:55,(1)V-Tach 2D(action)
+0:1:55,labcheck_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(1)V-Tach 2D(action),,,,,,,
+0:1:55,pulse_check,Error,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),,,,,,,
+0:1:55,sync_defib_100+,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),UNstable V.Tach WITH Pulse needs >100J SYNCHRONIZED Shock [UNsync = UNsafe],,,,,,
+0:1:55,ultrasound_FAST_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(1)V-Tach 2D(action),,,,,,,
+0:1:55,glucose_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(1)V-Tach 2D(action),,,,,,,
+0:1:55,lunglisten_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(1)V-Tach 2D(action),,,,,,,
+0:1:55,intubate_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(1)V-Tach 2D(action),,,,,,,
+0:1:55,chest_xray,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),Good CPR saves lives! Don't interrupt CPR for X-ray. Use stethoscope to assess lungs.,,,,,,
+0:1:55,bipap_NIV_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),BiPAP/CPAP = contraindicated in unresponsive patients. Consider intubation,,,,,,
+0:1:55,defib<99_sync_or_unsync,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),Defibrillate Sync Less 100+,,,,,,
+0:1:55,Epi,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),Patient is UNconscious = UNstable: Cardioversion is more important than medication,,,,,,
+0:1:55,unsync_defib_100+,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),V.Tach WITH pulse =  SYNCHRONIZED Shock V.Tach NO pulse =  UNsynchronized Shock,,,,,,
+0:1:55,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),This action is not required in this patient,,,,,,
+0:1:55,Amio_or_Lidocaine,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),Patient is UNconscious = UNstable: Cardioversion is more important than medication,,,,,,
+0:1:55,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(1)V-Tach 2D(action),This action is not required in this patient,,,,,,
+0:1:55,HR_Waveform(vital),,,,CR_VTach,CR_VTach
+0:1:55,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:1:55,RR_Waveform(vital),,,,CO2_CA,CO2_CA
+0:1:55,HR(vital),,,,192,205
+0:1:55,RR(vital),,,,12,12
+0:1:55,PR(vital),,,,--,0
+0:1:55,BP(vital),,,,--,0
+0:1:55,ETCO2(vital),,,,18,12
+0:1:55,Temperature(vital),,,,98,98
+0:1:55,umich3(speech),,,,,,umich3,"Yep, go ahead and check." 
+0:2:5,umich3(speech),,,,,,umich3,"Great. All right, let's check again for a pulse. Make sure we still have one. Can we run another blood pressure?" 
+0:2:6,umich4(speech),,,,,,umich4,"No pulse." 
+0:2:6,umich1(speech),,,,,,umich1,"There's no pause." 
+0:2:9,umich3(speech),,,,,,umich3,"No pulse. OK, let's start compressions please." 
+0:2:11,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:2:14,umich4(speech),,,,,,umich4,"Play." 
+0:2:15,umich2(speech),,,,,,umich2,"Read." 
+0:2:15,umich3(speech),,,,,,umich3,"Great." 
+0:2:20,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:2:20,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:2:20,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:2:20,HR(vital),,,,204,100
+0:2:20,RR(vital),,,,11,12
+0:2:20,PR(vital),,,,--,0
+0:2:20,BP(vital),,,,--,0
+0:2:20,ETCO2(vital),,,,11,18
+0:2:20,Temperature(vital),,,,97,98
+0:2:20,(2)V-Tach 2A.1(action),0:24,Begin CPR,100,,,umich1
+0:2:20,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:2:20,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:2:20,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:2:20,HR(vital),,,,204,205
+0:2:20,RR(vital),,,,12,12
+0:2:20,PR(vital),,,,0,0
+0:2:20,BP(vital),,,,0,0
+0:2:20,ETCO2(vital),,,,13,12
+0:2:20,Temperature(vital),,,,98,98
+0:2:20,(2)V-Tach 2A.1(action),0:24,Stop CPR,100,,,umich1
+0:2:21,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:2:21,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:2:21,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:2:21,HR(vital),,,,204,100
+0:2:21,RR(vital),,,,12,12
+0:2:21,PR(vital),,,,0,0
+0:2:21,BP(vital),,,,0,0
+0:2:21,ETCO2(vital),,,,12,18
+0:2:21,Temperature(vital),,,,98,98
+0:2:21,(2)V-Tach 2A.1(action),0:25,Enter CPR,100,,,umich1
+0:2:21,umich2(speech),,,,,,umich2,"OK." 
+0:2:27,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:2:28,(2)V-Tach 2A.1(action),0:32,Select Calcium,100,,,umich2
+0:2:33,umich3(speech),,,,,,umich3,"OK. And then Fatima, can you drop some EPI, please? We still have the pads on. Looks like we're still in Vt on the monitor here. So we'll plan to do compressions here for 2 minutes." 
+0:2:33,umich2(speech),,,,,,umich2,"OK, just a second." 
+0:2:34,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:2:40,umich3(speech),,,,,,umich3,"And then likely shock again if we're still in Vt afterwards." 
+0:2:42,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:2:47,umich3(speech),,,,,,umich3,"Let's also give it, let's also give 300 milligrams of Amio, please." 
+0:2:48,umich3(speech),,,,,,umich3,"Important information." 
+0:2:49,umich2(speech),,,,,,umich2,"So I'm afraid on the way select." 
+0:2:49,(2)V-Tach 2A.1(action),0:54,Select Epinephrine,100,,,umich2
+0:2:49,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:2:54,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:2:54,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:2:54,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:2:54,HR(vital),,,,99,205
+0:2:54,RR(vital),,,,11,12
+0:2:54,PR(vital),,,,--,0
+0:2:54,BP(vital),,,,--,0
+0:2:54,ETCO2(vital),,,,17,12
+0:2:54,Temperature(vital),,,,97,98
+0:2:54,(2)V-Tach 2A.1(action),0:59,Stop CPR,100,,,umich1
+0:2:54,umich3(speech),,,,,,umich3,"Yep. Oh, and then whoever is at the head of the bed can we bag as well?" 
+0:2:56,umich4(speech),,,,,,umich4,"Yep, I need that bag. Yep." 
+0:2:57,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:2:58,umich2(speech),,,,,,umich2,"Do you want me to give the epination now?" 
+0:2:58,(2)V-Tach 2A.1(action),1:3,Insert Bag Mask,100,,,umich1
+0:3:2,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:3:2,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:3:2,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:3:2,HR(vital),,,,182,100
+0:3:2,RR(vital),,,,12,12
+0:3:2,PR(vital),,,,0,0
+0:3:2,BP(vital),,,,0,0
+0:3:2,ETCO2(vital),,,,13,18
+0:3:2,Temperature(vital),,,,98,98
+0:3:2,(2)V-Tach 2A.1(action),1:7,Enter CPR,100,,,umich1
+0:3:3,umich4(speech),,,,,,umich4,"Two BHK flat, 1000." 
+0:3:3,umich2(speech),,,,,,umich2,"OK." 
+0:3:5,umich3(speech),,,,,,umich3,"No, let's hold off for now." 
+0:3:6,umich2(speech),,,,,,umich2,"OK." 
+0:3:12,umich3(speech),,,,,,umich3,"But give the amio if you haven't already." 
+0:3:12,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:3:15,umich2(speech),,,,,,umich2,"Let me do that." 
+0:3:16,umich2(speech),,,,,,umich2,"And we do." 
+0:3:18,(2)V-Tach 2A.1(action),1:23,Perform Bag Mask Pump,100,,,umich3
+0:3:19,umich2(speech),,,,,,umich2,"Select." 
+0:3:23,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:3:23,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:3:23,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:3:23,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:3:23,HR(vital),,,,99,205
+0:3:23,RR(vital),,,,11,12
+0:3:23,PR(vital),,,,--,0
+0:3:23,BP(vital),,,,--,0
+0:3:23,ETCO2(vital),,,,17,12
+0:3:23,Temperature(vital),,,,97,98
+0:3:23,(2)V-Tach 2A.1(action),1:28,Stop CPR,100,,,umich1
+0:3:23,(2)V-Tach 2A.1(action),1:28,Select Calcium,100,,,umich2
+0:3:25,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:3:25,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:3:25,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:3:25,HR(vital),,,,120,100
+0:3:25,RR(vital),,,,12,12
+0:3:25,PR(vital),,,,0,0
+0:3:25,BP(vital),,,,0,0
+0:3:25,ETCO2(vital),,,,16,18
+0:3:25,Temperature(vital),,,,98,98
+0:3:25,(2)V-Tach 2A.1(action),1:30,Enter CPR,100,,,umich1
+0:3:27,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:3:30,umich2(speech),,,,,,umich2,"So it keeps saying calcium. Just a second." 
+0:3:31,umich3(speech),,,,,,umich3,"That's OK." 
+0:3:33,(2)V-Tach 2A.1(action),1:37,Select Amiodarone,100,,,umich2
+0:3:35,umich2(speech),,,,,,umich2,"OK, I made their own." 
+0:3:37,umich1(speech),,,,,,umich1,"You have to use the arrow." 
+0:3:37,umich3(speech),,,,,,umich3,"And." 
+0:3:38,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:3:40,umich2(speech),,,,,,umich2,"OK, I'll give them either one now." 
+0:3:40,Amio_or_Lidocaine,Error,Action-Should-Not-Be-Performed,Action-Was-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),Patient is UNconscious = UNstable: Cardioversion is more important than medication,,,,,,
+0:3:40,(2)V-Tach 2A.1(action),1:45,Insert Syringe on Right Hand,100,,,umich2
+0:3:50,umich3(speech),,,,,,umich3,"I realized I didn't notice exactly what time we started the code. Did anyone happen to see the clock? Otherwise I'll guess that it was about 3 minutes in 'cause we're at 3 minutes 50 seconds now." 
+0:3:52,umich2(speech),,,,,,umich2,"Get me the wrong given." 
+0:3:53,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:3:56,(2)V-Tach 2A.1(action),2:1,Select Epinephrine,100,,,umich2
+0:3:57,umich3(speech),,,,,,umich3,"Uh, no." 
+0:4:1,umich1(speech),,,,,,umich1,"I saw you see the the message there, it said cardi version is more important than medication. It has a message saying cardi version is more important than medication because they're unstable." 
+0:4:3,umich3(speech),,,,,,umich3,"Yeah, OK." 
+0:4:7,umich1(speech),,,,,,umich1,"So yeah, it's been about two minutes since the last rhythm check." 
+0:4:8,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:4:10,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:4:12,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:4:12,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:4:12,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:4:12,HR(vital),,,,100,205
+0:4:12,RR(vital),,,,12,12
+0:4:12,PR(vital),,,,--,0
+0:4:12,BP(vital),,,,--,0
+0:4:12,ETCO2(vital),,,,18,12
+0:4:12,Temperature(vital),,,,98,98
+0:4:12,(2)V-Tach 2A.1(action),2:16,Stop CPR,100,,,umich1
+0:4:14,umich3(speech),,,,,,umich3,"OK, so let's check a pulse again. And while we're doing that, let's look at the rhythm here." 
+0:4:15,umich1(speech),,,,,,umich1,"OK, post compression stopped." 
+0:4:16,(2)V-Tach 2A.1(action),2:21,Pulse Check,100,,,umich1
+0:4:17,umich3(speech),,,,,,umich3,"Pulse check. Yep." 
+0:4:17,umich1(speech),,,,,,umich1,"No pulse." 
+0:4:18,(2)V-Tach 2A.1(action),2:23,Perform Bag Mask Pump,100,,,umich3
+0:4:18,(2)V-Tach 2A.1(action),2:23,Perform Bag Mask Pump,100,,,umich1
+0:4:20,umich2(speech),,,,,,umich2,"OK." 
+0:4:22,(2)V-Tach 2A.1(action),2:27,Pulse Check,100,,,umich1
+0:4:23,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:4:25,umich3(speech),,,,,,umich3,"OK, so it looks like Vt still. Let's shock again. 200 joules again." 
+0:4:25,umich2(speech),,,,,,umich2,"Shuck. OK, charging." 
+0:4:30,umich3(speech),,,,,,umich3,"Yeah." 
+0:4:31,umich2(speech),,,,,,umich2,"Ready to push?" 
+0:4:34,umich3(speech),,,,,,umich3,"Yep, go for it." 
+0:4:35,(2)V-Tach 2A.1(action),2:40,Defib (UNsynchronized Shock) 200J,100,,,umich2
+0:4:36,umich2(speech),,,,,,umich2,"All clear push." 
+0:4:36,(2)V-Tach 2A.1(action)
+0:4:36,unsync_defib_150+,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),UNstable V.Tach =  YOU GOTTA SHOCK! (Electricity Saves Lives!),,,,,,
+0:4:36,bipap_NIV_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),BiPAP/CPAP = contraindicated in unresponsive patients. Consider intubation,,,,,,
+0:4:36,defib<149_sync_or_unsync,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),Use AT LEAST 150 joules for:  > V.Fib  > V.Tach with NO Pulse,,,,,,
+0:4:36,intubate_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,pulse_check,Error,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,CPR_perform_>1Pump,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,ultrasound_FAST_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),This action is not required in this patient,,,,,,
+0:4:36,EKG,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),Good CPR saves lives! Don't interrupt CPR for an EKG.,,,,,,
+0:4:36,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),This action is not required in this patient,,,,,,
+0:4:36,sync_defib_150+,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),V.Tach WITH pulse =  SYNCHRONIZED Shock V.Tach NO pulse =  UNsynchronized Shock,,,,,,
+0:4:36,glucose_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,chest_xray,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(2)V-Tach 2A.1(action),Good CPR saves lives! Don't interrupt CPR for X-ray. Use stethoscope to assess lungs.,,,,,,
+0:4:36,Epi,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),Give EPI every 3-p5 min. if shocks are not working,,,,,,
+0:4:36,lunglisten_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,labcheck_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(2)V-Tach 2A.1(action),,,,,,,
+0:4:36,HR_Waveform(vital),,,,CR_VTach,CR_VTach
+0:4:36,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:4:36,RR_Waveform(vital),,,,CO2_CA,CO2_CA
+0:4:36,HR(vital),,,,204,210
+0:4:36,RR(vital),,,,11,12
+0:4:36,PR(vital),,,,--,0
+0:4:36,BP(vital),,,,--,0
+0:4:36,ETCO2(vital),,,,11,14
+0:4:36,Temperature(vital),,,,97,98
+0:4:38,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:4:38,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:4:46,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:4:46,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:4:46,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:4:46,HR(vital),,,,209,100
+0:4:46,RR(vital),,,,12,12
+0:4:46,PR(vital),,,,0,0
+0:4:46,BP(vital),,,,0,0
+0:4:46,ETCO2(vital),,,,13,18
+0:4:46,Temperature(vital),,,,98,98
+0:4:46,(3)V-Tach 2B.1(action),0:9,Enter CPR,100,,,umich1
+0:4:46,umich2(speech),,,,,,umich2,"OK, at the end of the way." 
+0:4:49,umich4(speech),,,,,,umich4,"2018." 
+0:4:49,(3)V-Tach 2B.1(action),0:13,Insert Syringe on Right Hand,100,,,umich2
+0:4:51,umich3(speech),,,,,,umich3,"Great. All right, let's get back on the chest, continue compressions. Let's give the EPI, please, code dose EPI and then also give the 300 milligrams of Amio if we haven't already." 
+0:4:52,umich2(speech),,,,,,umich2,"OK." 
+0:4:53,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:4:56,umich3(speech),,,,,,umich3,"OK." 
+0:4:57,umich2(speech),,,,,,umich2,"To epinephrine given the only to repeat the enemy." 
+0:5:1,umich2(speech),,,,,,umich2,"OK, I've already given it." 
+0:5:1,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:5:1,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:5:1,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:5:1,HR(vital),,,,99,210
+0:5:1,RR(vital),,,,11,12
+0:5:1,PR(vital),,,,--,0
+0:5:1,BP(vital),,,,--,0
+0:5:1,ETCO2(vital),,,,17,14
+0:5:1,Temperature(vital),,,,97,98
+0:5:1,(3)V-Tach 2B.1(action),0:25,Stop CPR,100,,,umich1
+0:5:2,umich4(speech),,,,,,umich4,"Play." 
+0:5:2,umich2(speech),,,,,,umich2,"OK." 
+0:5:3,umich3(speech),,,,,,umich3,"No, just the one dose. If you already gave it, then we're good on that." 
+0:5:4,HR_Waveform(vital),,,,CR_VTach,CR_SinLike
+0:5:4,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:5:4,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:5:4,HR(vital),,,,132,100
+0:5:4,RR(vital),,,,12,12
+0:5:4,PR(vital),,,,0,0
+0:5:4,BP(vital),,,,0,0
+0:5:4,ETCO2(vital),,,,16,18
+0:5:4,Temperature(vital),,,,98,98
+0:5:4,(3)V-Tach 2B.1(action),0:28,Enter CPR,100,,,umich1
+0:5:8,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:5:15,umich3(speech),,,,,,umich3,"OK, Oh, looks like we're already at 5 minutes again. Or we're already at 5 minutes." 
+0:5:21,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:5:22,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:5:23,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:5:25,(3)V-Tach 2B.1(action),0:48,Perform Bag Mask Pump,100,,,umich4
+0:5:25,umich3(speech),,,,,,umich3,"So I don't remember exactly but but if if it's been 2 minutes, let's go ahead and do another pulse check here." 
+0:5:25,HR_Waveform(vital),,,,CR_SinLike,CR_VTach
+0:5:25,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:5:25,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:5:25,HR(vital),,,,99,210
+0:5:25,RR(vital),,,,11,12
+0:5:25,PR(vital),,,,--,0
+0:5:25,BP(vital),,,,--,0
+0:5:25,ETCO2(vital),,,,17,14
+0:5:25,Temperature(vital),,,,97,98
+0:5:25,(3)V-Tach 2B.1(action),0:48,Stop CPR,100,,,umich1
+0:5:28,(3)V-Tach 2B.1(action),0:51,Pulse Check,100,,,umich1
+0:5:30,umich1(speech),,,,,,umich1,"There's no pulse." 
+0:5:33,(3)V-Tach 2B.1(action),0:57,Pulse Check,100,,,umich1
+0:5:37,umich2(speech),,,,,,umich2,"OK." 
+0:5:37,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:5:37,umich3(speech),,,,,,umich3,"No pulse. OK, Umm, so let's go up to 300 joules." 
+0:5:40,umich1(speech),,,,,,umich1,"OK." 
+0:5:42,umich2(speech),,,,,,umich2,"300 joules charging." 
+0:5:44,umich1(speech),,,,,,umich1,"BMC to start work on Mumbais first textile museum in 15 days." 
+0:5:44,umich2(speech),,,,,,umich2,"OK." 
+0:5:45,umich3(speech),,,,,,umich3,"OK, go ahead and shock whenever you're ready. Yep." 
+0:5:49,umich2(speech),,,,,,umich2,"Oh, there." 
+0:5:50,(3)V-Tach 2B.1(action),1:14,Defib (UNsynchronized Shock) 300J,100,,,umich2
+0:5:51,umich3(speech),,,,,,umich3,"Mm-hmm." 
+0:5:51,(3)V-Tach 2B.1(action)
+0:5:51,HR_Waveform(vital),,,,CR_VTach,CR_Asystole
+0:5:51,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:5:51,RR_Waveform(vital),,,,CO2_CA,CO2_CA
+0:5:51,HR(vital),,,,209,0
+0:5:51,RR(vital),,,,11,12
+0:5:51,PR(vital),,,,--,0
+0:5:51,BP(vital),,,,--,0
+0:5:51,ETCO2(vital),,,,13,10
+0:5:51,Temperature(vital),,,,97,98
+0:5:51,sync_defib_150+,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),V.Tach WITH pulse =  SYNCHRONIZED Shock V.Tach NO pulse =  UNsynchronized Shock,,,,,,
+0:5:51,defib<149_sync_or_unsync,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),Use AT LEAST 150 joules for:  > V.Fib  > V.Tach with NO Pulse,,,,,,
+0:5:51,pulse_check,Error,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),This action is not required in this patient,,,,,,
+0:5:51,lunglisten_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,glucose_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,intubate_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,ultrasound_FAST_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,bipap_NIV_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),BiPAP/CPAP = contraindicated in unresponsive patients. Consider intubation,,,,,,
+0:5:51,labcheck_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,Epi,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,CPR_perform_>1Pump,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,chest_xray,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),Good CPR saves lives! Don't interrupt CPR for X-ray. Use stethoscope to assess lungs.,,,,,,
+0:5:51,unsync_defib_150+,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),UNstable V.Tach =  YOU GOTTA SHOCK! (Electricity Saves Lives!),,,,,,
+0:5:51,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),This action is not required in this patient,,,,,,
+0:5:51,Amio_or_Lidocaine,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(3)V-Tach 2B.1(action),,,,,,,
+0:5:51,EKG,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(3)V-Tach 2B.1(action),Good CPR saves lives! Don't interrupt CPR for an EKG.,,,,,,
+0:5:52,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:5:54,umich2(speech),,,,,,umich2,"Push 300 joules given." 
+0:5:55,umich3(speech),,,,,,umich3,"OK." 
+0:5:56,HR_Waveform(vital),,,,CR_Asystole,CR_SinLike
+0:5:56,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:5:56,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:5:56,HR(vital),,,,101,108
+0:5:56,RR(vital),,,,12,12
+0:5:56,PR(vital),,,,0,0
+0:5:56,BP(vital),,,,0,0
+0:5:56,ETCO2(vital),,,,11,22
+0:5:56,Temperature(vital),,,,98,98
+0:5:56,(4)Asystole 1D No.1(action),0:5,Enter CPR,100,,,umich1
+0:5:59,umich1(speech),,,,,,umich1,"5 minutes, 50 seconds, I'll keep. I'll keep track of the time, Doctor." 
+0:6:2,umich1(speech),,,,,,umich1,"Very great. Thank you." 
+0:6:4,umich3(speech),,,,,,umich3,"OK, great. Thank you. All right. And let's give another EPI as well." 
+0:6:5,(4)Asystole 1D No.1(action),0:13,Select Epinephrine,100,,,umich2
+0:6:5,HR_Waveform(vital),,,,CR_SinLike,CR_Asystole
+0:6:5,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:6:5,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:6:5,HR(vital),,,,107,0
+0:6:5,RR(vital),,,,12,12
+0:6:5,PR(vital),,,,0,0
+0:6:5,BP(vital),,,,0,0
+0:6:5,ETCO2(vital),,,,20,10
+0:6:5,Temperature(vital),,,,98,98
+0:6:5,(4)Asystole 1D No.1(action),0:14,Stop CPR,100,,,umich1
+0:6:6,umich2(speech),,,,,,umich2,"OK, I pee on the way." 
+0:6:7,HR_Waveform(vital),,,,CR_Asystole,CR_SinLike
+0:6:7,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:6:7,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:6:7,HR(vital),,,,90,108
+0:6:7,RR(vital),,,,12,12
+0:6:7,PR(vital),,,,0,0
+0:6:7,BP(vital),,,,0,0
+0:6:7,ETCO2(vital),,,,19,22
+0:6:7,Temperature(vital),,,,98,98
+0:6:7,(4)Asystole 1D No.1(action),0:15,Enter CPR,100,,,umich1
+0:6:7,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:6:7,(4)Asystole 1D No.1(action),0:15,Insert Syringe on Right Hand,100,,,umich2
+0:6:8,HR_Waveform(vital),,,,CR_SinLike,CR_Asystole
+0:6:8,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:6:8,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:6:8,HR(vital),,,,91,0
+0:6:8,RR(vital),,,,12,12
+0:6:8,PR(vital),,,,0,0
+0:6:8,BP(vital),,,,0,0
+0:6:8,ETCO2(vital),,,,19,10
+0:6:8,Temperature(vital),,,,98,98
+0:6:8,(4)Asystole 1D No.1(action),0:16,Stop CPR,100,,,umich1
+0:6:8,umich3(speech),,,,,,umich3,"Great." 
+0:6:9,HR_Waveform(vital),,,,CR_Asystole,CR_SinLike
+0:6:9,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:6:9,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:6:9,HR(vital),,,,84,108
+0:6:9,RR(vital),,,,12,12
+0:6:9,PR(vital),,,,0,0
+0:6:9,BP(vital),,,,0,0
+0:6:9,ETCO2(vital),,,,18,22
+0:6:9,Temperature(vital),,,,98,98
+0:6:9,(4)Asystole 1D No.1(action),0:17,Enter CPR,100,,,umich1
+0:6:10,(4)Asystole 1D No.1(action)
+0:6:10,lunglisten_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,glucose_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,intubate_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,labcheck_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,ultrasound_FAST_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,pulse_check,Error,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,HR_Waveform(vital),,,,CR_SinLike,CR_SinLike
+0:6:10,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:6:10,RR_Waveform(vital),,,,CO2_CPR,CO2_CPR
+0:6:10,HR(vital),,,,88,100
+0:6:10,RR(vital),,,,12,12
+0:6:10,PR(vital),,,,0,0
+0:6:10,BP(vital),,,,0,0
+0:6:10,ETCO2(vital),,,,19,18
+0:6:10,Temperature(vital),,,,98,98
+0:6:10,CPR_perform_>1Pump,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),,,,,,,
+0:6:10,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),This action is not required in this patient,,,,,,
+0:6:10,Amio_or_Lidocaine,Warning,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),Amio or Lidocaine is for Shock-Resistant V Tach/Fib....  Please check rhythm!,,,,,,
+0:6:10,chest_xray,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),Good CPR saves lives! Don't interrupt CPR for X-ray. Use stethoscope to assess lungs.,,,,,,
+0:6:10,bipap_NIV_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),BiPAP/CPAP = contraindicated in unresponsive patients. Consider intubation,,,,,,
+0:6:10,EKG,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),Good CPR saves lives! Don't interrupt CPR for an EKG.,,,,,,
+0:6:10,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),This action is not required in this patient,,,,,,
+0:6:10,any_defib_any_joules_sync_or_unsynch,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),This is not a shockable rhythm,,,,,,
+0:6:10,Epi,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(4)Asystole 1D No.1(action),Give EPI every 3-5 min. if shocks aren't working,,,,,,
+0:6:16,umich2(speech),,,,,,umich2,"OK, if you're not finger then?" 
+0:6:21,umich2(speech),,,,,,umich2,"Yes." 
+0:6:22,umich3(speech),,,,,,umich3,"OK. And I just wanted to confirm, we did give that 300 milligrams of amino earlier, right?" 
+0:6:22,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:6:22,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:6:22,umich3(speech),,,,,,umich3,"OK." 
+0:6:33,umich3(speech),,,,,,umich3,"OK. Do you have lidocaine available there?" 
+0:6:34,umich2(speech),,,,,,umich2,"I have lidocaine." 
+0:6:36,(5)V-Fib 4C.1 - AMIO(action),0:26,Perform Bag Mask Pump,100,,,umich4
+0:6:36,umich2(speech),,,,,,umich2,"Yes, I do." 
+0:6:37,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:6:37,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:6:39,umich3(speech),,,,,,umich3,"In your menu. Let's do that as well then." 
+0:6:40,(5)V-Fib 4C.1 - AMIO(action),0:30,Select Calcium,100,,,umich2
+0:6:41,umich2(speech),,,,,,umich2,"So later can select." 
+0:6:44,umich2(speech),,,,,,umich2,"No, that's cancelled. Just a second." 
+0:6:48,umich2(speech),,,,,,umich2,"Like that?" 
+0:6:50,(5)V-Fib 4C.1 - AMIO(action),0:39,Select Lidocaine,100,,,umich2
+0:6:52,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:6:53,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:6:53,umich2(speech),,,,,,umich2,"Select OK." 
+0:6:55,(5)V-Fib 4C.1 - AMIO(action),0:44,Insert Syringe on Right Hand,100,,,umich2
+0:6:59,umich3(speech),,,,,,umich3,"NOMATCH: Speech could not be recognized." 
+0:7:3,umich2(speech),,,,,,umich2,"Can I the king given?" 
+0:7:5,umich3(speech),,,,,,umich3,"OK." 
+0:7:7,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:7:8,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:7:10,umich3(speech),,,,,,umich3,"All right." 
+0:7:11,umich2(speech),,,,,,umich2,"Alright, let's." 
+0:7:12,umich4(speech),,,,,,umich4,"BJP." 
+0:7:14,(5)V-Fib 4C.1 - AMIO(action),1:3,Perform Bag Mask Pump,100,,,umich1
+0:7:14,umich1(speech),,,,,,umich1,"Come in 1-2 minutes. In about another 40 seconds, 40 seconds more 2 minutes." 
+0:7:15,umich3(speech),,,,,,umich3,"Play." 
+0:7:25,HR_Waveform(vital),,,,CR_SinLike,CR_VFib
+0:7:25,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:7:25,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:7:25,HR(vital),,,,99,0
+0:7:25,RR(vital),,,,11,12
+0:7:25,PR(vital),,,,--,0
+0:7:25,BP(vital),,,,--,0
+0:7:25,ETCO2(vital),,,,17,12
+0:7:25,Temperature(vital),,,,97,98
+0:7:25,(5)V-Fib 4C.1 - AMIO(action),1:14,Stop CPR,100,,,umich1
+0:7:25,HR_Waveform(vital),,,,CR_VFib,CR_SinLike
+0:7:25,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:7:25,RR_Waveform(vital),,,,CO2_CA,CO2_CPR
+0:7:25,HR(vital),,,,95,100
+0:7:25,RR(vital),,,,12,12
+0:7:25,PR(vital),,,,0,0
+0:7:25,BP(vital),,,,0,0
+0:7:25,ETCO2(vital),,,,17,18
+0:7:25,Temperature(vital),,,,98,98
+0:7:25,(5)V-Fib 4C.1 - AMIO(action),1:15,Enter CPR,100,,,umich1
+0:7:26,umich2(speech),,,,,,umich2,"Let me see." 
+0:7:26,(5)V-Fib 4C.1 - AMIO(action),1:16,Order Ultrasound,100,,,umich3
+0:7:29,umich3(speech),,,,,,umich3,"OK. And then Fatima, during this pulse check, you want to do an echo if we're able to do that. I'm not sure if I needed to order that or what. Let's see order ultrasound perform." 
+0:7:32,umich3(speech),,,,,,umich3,"Oh, there we go. OK." 
+0:7:32,umich2(speech),,,,,,umich2,"OK, OK." 
+0:7:33,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:7:34,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:7:44,umich3(speech),,,,,,umich3,"All right, so looks like cardiac stencil." 
+0:7:46,umich3(speech),,,,,,umich3,"Ready for another pulse check?" 
+0:7:48,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:7:48,HR_Waveform(vital),,,,CR_SinLike,CR_VFib
+0:7:48,PR_Waveform(vital),,,,O2_PP,O2_PP
+0:7:48,RR_Waveform(vital),,,,CO2_CPR,CO2_CA
+0:7:48,HR(vital),,,,100,0
+0:7:48,RR(vital),,,,12,12
+0:7:48,PR(vital),,,,--,0
+0:7:48,BP(vital),,,,--,0
+0:7:48,ETCO2(vital),,,,18,12
+0:7:48,Temperature(vital),,,,98,98
+0:7:48,(5)V-Fib 4C.1 - AMIO(action),1:37,Stop CPR,100,,,umich1
+0:7:49,umich1(speech),,,,,,umich1,"Yeah, 5 seconds. But yeah, we do it now." 
+0:7:51,(5)V-Fib 4C.1 - AMIO(action),1:40,Pulse Check,100,,,umich1
+0:7:52,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:7:53,umich1(speech),,,,,,umich1,"There's no pulse." 
+0:8:0,umich3(speech),,,,,,umich3,"Perfect. So another pulse check. Rhythm check. Alright, so it looks like we're in V fib now, so let's go ahead and shock again." 
+0:8:3,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:8:3,umich2(speech),,,,,,umich2,"OK, check again. 300 joules. Do you want to increase to 350?" 
+0:8:7,umich3(speech),,,,,,umich3,"Yep. No, let's just stay there. That's fine." 
+0:8:7,umich2(speech),,,,,,umich2,"OK, charging." 
+0:8:12,umich2(speech),,,,,,umich2,"All clear." 
+0:8:13,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:8:14,(5)V-Fib 4C.1 - AMIO(action),2:3,Defib (UNsynchronized Shock) 300J,100,,,umich2
+0:8:15,(5)V-Fib 4C.1 - AMIO(action)
+0:8:15,bipap_NIV_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),BiPAP/CPAP = contraindicated in unresponsive patients. Consider intubation,,,,,,
+0:8:15,lunglisten_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,defib<149_sync_or_unsync,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),Use AT LEAST 150 joules for:  > V.Fib  > V.Tach with NO Pulse,,,,,,
+0:8:15,glucose_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,sync_defib_150+,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),V Fib needs UNsynchronized Shock/Defib Synchronized Shock will NOT work,,,,,,
+0:8:15,ultrasound_FAST_anytime,Warning,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,CPR_perform_>1Pump,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,unsync_defib_150+,CriticalError,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),Defib that V Fib!! This patient needs electricity,,,,,,
+0:8:15,EKG,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),Good CPR saves lives! Don't interrupt CPR for an EKG.,,,,,,
+0:8:15,intubate_anytime,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),Patient should have been intubated EARLIER!,,,,,,
+0:8:15,labcheck_anytime,Warning,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich2,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),This action is not required in this patient,,,,,,
+0:8:15,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),This action is not required in this patient,,,,,,
+0:8:15,chest_xray,Error,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),Good CPR saves lives! Don't interrupt CPR for X-ray. Use stethoscope to assess lungs.,,,,,,
+0:8:15,Amio_or_Lidocaine,Warning,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(5)V-Fib 4C.1 - AMIO(action),,,,,,,
+0:8:15,HR_Waveform(vital),,,,CR_VFib,CR_NSR
+0:8:15,PR_Waveform(vital),,,,O2_PP,O2_NW
+0:8:15,RR_Waveform(vital),,,,CO2_CA,CO2_Norm
+0:8:15,HR(vital),,,,--,124
+0:8:15,RR(vital),,,,12,12
+0:8:15,PR(vital),,,,--,98
+0:8:15,BP(vital),,,,--,0
+0:8:15,ETCO2(vital),,,,12,36
+0:8:15,Temperature(vital),,,,98,98
+0:8:15,Systolic(vital),,,,179,166
+0:8:15,Diastolic(vital),,,,179,96
+0:8:15,SDTogether(vital),,,,179,119
+0:8:15,umich3(speech),,,,,,umich3,"Yep." 
+0:8:15,umich2(speech),,,,,,umich2,"Cannabis." 
+0:8:18,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:8:19,(6)ROSC 5B - Stemi(action),0:3,Enter CPR,100,,,umich1
+0:8:20,umich2(speech),,,,,,umich2,"Mm-hmm." 
+0:8:22,umich3(speech),,,,,,umich3,"OK. Keep going with compressions. Thank you." 
+0:8:24,umich1(speech),,,,,,umich1,"Pressure started." 
+0:8:33,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:8:35,umich2(speech),,,,,,umich2,"Call my mom." 
+0:8:39,umich3(speech),,,,,,umich3,"Does does look like we have a normal sinus rhythm back? Let's continue compressions until the next pulse check. But I'm hoping that we'll have a pulse. Oh, and well, well, never mind, let's continue until the next." 
+0:8:39,HR_Waveform(vital),,,,CR_NSR,CR_NSR
+0:8:39,PR_Waveform(vital),,,,O2_NW,O2_NW
+0:8:39,RR_Waveform(vital),,,,CO2_Norm,CO2_Norm
+0:8:39,HR(vital),,,,123,124
+0:8:39,RR(vital),,,,11,12
+0:8:39,PR(vital),,,,97,98
+0:8:39,BP(vital),,,,--,0
+0:8:39,ETCO2(vital),,,,35,36
+0:8:39,Temperature(vital),,,,97,98
+0:8:39,Systolic(vital),,,,166,166
+0:8:39,Diastolic(vital),,,,96,96
+0:8:39,SDTogether(vital),,,,119,119
+0:8:39,(6)ROSC 5B - Stemi(action),0:24,Stop CPR,100,,,umich1
+0:8:43,umich1(speech),,,,,,umich1,"I think uh." 
+0:8:44,(6)ROSC 5B - Stemi(action),0:29,Pulse Check,100,,,umich1
+0:8:46,umich2(speech),,,,,,umich2,"How's today's?" 
+0:8:48,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:8:48,umich1(speech),,,,,,umich1,"There's a pulse, Yeah, there's a pulse. He's not waking up, but there's a pulse, yeah." 
+0:8:48,umich3(speech),,,,,,umich3,"OK, pulse check. Is he waking up at all? Great." 
+0:8:57,umich3(speech),,,,,,umich3,"OK, so there's a pulse. Umm, we do have a blood pressure it looks like. Umm, let's just cycle it and make sure that that's accurate." 
+0:9:3,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:9:3,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:9:6,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:9:8,(6)ROSC 5B - Stemi(action),0:53,Order EKG,100,,,umich3
+0:9:9,umich3(speech),,,,,,umich3,"So it looks, let's get some Aleiva Fed drip in the room if we're able to order that, I don't know, let's get an EKG as well, which I'm going to order now." 
+0:9:11,umich3(speech),,,,,,umich3,"Order EKG." 
+0:9:13,umich4(speech),,,,,,umich4,"BJP." 
+0:9:20,umich1(speech),,,,,,umich1,"Show me the reviews and agricultural village." 
+0:9:21,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:9:24,umich3(speech),,,,,,umich3,"OK, so EKG is showing an inferior STEMI pattern, so let's activate the Cath lab. Is that something I need to do? Let's see." 
+0:9:27,umich3(speech),,,,,,umich3,"Order intubation." 
+0:9:31,umich3(speech),,,,,,umich3,"OK." 
+0:9:31,umich2(speech),,,,,,umich2,"OK." 
+0:9:33,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:9:37,umich1(speech),,,,,,umich1,"We can activate Cath lab, right? We can't activate cat lab, but yeah. Anything else you want to do?" 
+0:9:37,umich3(speech),,,,,,umich3,"Oh OK, cool. In that case, so." 
+0:9:43,umich3(speech),,,,,,umich3,"If we're still wake, if we're still not waking up at the head of the bed, let's go ahead and intubate as well." 
+0:9:48,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:9:49,umich3(speech),,,,,,umich3,"Is he showing any signs of waking up at all?" 
+0:9:49,umich1(speech),,,,,,umich1,"No." 
+0:9:51,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:9:57,umich3(speech),,,,,,umich3,"OK, just go ahead without meds then, whenever you're ready." 
+0:9:58,umich1(speech),,,,,,umich1,"Brian, do I do that?" 
+0:10:1,umich4(speech),,,,,,umich4,"I'm sorry, I can't. What did you say?" 
+0:10:5,intubate_anytime,Error,Action-Should-Not-Be-Performed,Action-Was-Performed,Error-Triggered,umich1,(6)ROSC 5B - Stemi(action),Patient should have been intubated EARLIER!,,,,,,
+0:10:5,(6)ROSC 5B - Stemi(action),1:49,Order Intubation,100,,,umich1
+0:10:5,umich1(speech),,,,,,umich1,"I'll, I'll do it. I'll debate right now. I got it. I got it." 
+0:10:5,umich3(speech),,,,,,umich3,"Oh, can you intubate it? Oh, perfect." 
+0:10:5,umich4(speech),,,,,,umich4,"Oh, Intubate. Yeah, I got it right here." 
+0:10:6,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:10:7,umich3(speech),,,,,,umich3,"Yeah." 
+0:10:8,umich4(speech),,,,,,umich4,"Oh, you got it." 
+0:10:11,umich1(speech),,,,,,umich1,"Yeah, yeah, no worries, Pigeons intubated." 
+0:10:18,umich3(speech),,,,,,umich3,"Perfect. And then let's recycle a blood pressure if we're able to do that." 
+0:10:18,(6)ROSC 5B - Stemi(action),2:3,Pulse Check,100,,,umich1
+0:10:21,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:10:22,(6)ROSC 5B - Stemi(action),2:7,Order Chest X-ray,100,,,umich3
+0:10:22,umich1(speech),,,,,,umich1,"166 / 96." 
+0:10:22,umich3(speech),,,,,,umich3,"I'll order a chest X-ray to come." 
+0:10:26,umich3(speech),,,,,,umich3,"Great, going to get a chest X-ray." 
+0:10:28,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:10:30,umich3(speech),,,,,,umich3,"OK. Nice job with innovation, looks good." 
+0:10:33,umich3(speech),,,,,,umich3,"Heart looks big." 
+0:10:36,umich2(speech),,,,,,umich2,"NOMATCH: Speech could not be recognized." 
+0:10:42,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:10:43,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:10:47,umich2(speech),,,,,,umich2,"OK." 
+0:10:47,umich3(speech),,,,,,umich3,"OK." 
+0:10:55,umich2(speech),,,,,,umich2,"Play." 
+0:10:56,(6)ROSC 5B - Stemi(action)
+0:10:56,ROSC_cool_patient,Error,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich1,(6)ROSC 5B - Stemi(action),Unconscious post-arrest patients should be cooled to 33-36C,,,,,,
+0:10:56,ROSC_Fentanyl_or_Propofol,Error,Action-Should-Be-Performed,Action-Was-Not-Performed,Error-Triggered,umich1,(6)ROSC 5B - Stemi(action),,,,,,,
+0:10:56,glucose_anytime,Warning,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),Glucose should have been checked much earlier in the code.,,,,,,
+0:10:56,chestneedle_thora_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),This action is not required in this patient,,,,,,
+0:10:56,any_defib_any_joules_sync_or_unsynch,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),This is not a shockable rhythm,,,,,,
+0:10:56,chest_xray,Error,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),,,,,,,
+0:10:56,EKG,Error,Action-Should-Be-Performed,Action-Was-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),Get an EKG after ROSC. It may help find why  the patient arrested,,,,,,
+0:10:56,heartneedle_pericard_anytime,CriticalError,Action-Should-Not-Be-Performed,Action-Was-Not-Performed,Error-Did-Not-Trigger,NA,(6)ROSC 5B - Stemi(action),This action is not required in this patient,,,,,,
+0:10:58,umich1(speech),,,,,,umich1,"NOMATCH: Speech could not be recognized." 
+0:10:58,umich3(speech),,,,,,umich3,"I guess let's order some labs and things." 
+0:10:58,umich4(speech),,,,,,umich4,"NOMATCH: Speech could not be recognized." 
+0:11:0,umich3(speech),,,,,,umich3,"Let's see." 
+0:11:6,umich3(speech),,,,,,umich3,"Order new blood tests." 
+0:11:10,umich3(speech),,,,,,umich3,"Oh, cooling, OK." 
+0:11:10,umich1(speech),,,,,,umich1,"I got a message saying it should be cool like simulation ended, simulation ended." 
+
+Questionnare Results
+Description,Rating,Rating Scale
+"How effectively did your team communicate?",6,0 - 7
+"How effective was tha team leader?",5,0 - 7
+"How effectively did your team work together to complete tasks?",6,0 - 7

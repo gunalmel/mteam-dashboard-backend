@@ -1,0 +1,11 @@
+{
+  "xAxisPaddingSecs": 15,
+  "yAnnotation": 0.9,
+  "yMin": 0,
+  "yIncrement": 1,
+  "missedActions": {
+    "maxCountPerRow" : 3,
+    "yIncrement": -3.0,
+    "yMin": -1.0
+  }
+}

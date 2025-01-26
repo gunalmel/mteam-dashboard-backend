@@ -1,0 +1,10 @@
+[workspace]
+resolver = "3"
+members = [
+    "action-processor",
+    "plotly-processor",
+    "web",
+]
+
+# Optional: specify a default package to build
+ default-members = ["web"]

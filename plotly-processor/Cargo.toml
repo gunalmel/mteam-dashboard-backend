@@ -1,0 +1,11 @@
+[package]
+name = "mteam-dashboard-plotly-processor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0.217", features = ["derive"] }
+mteam-dashboard-action-processor = { path = "../action-processor" }
+serde_json = "1.0.135"
+once_cell = "1.20.2"
+chrono = "0.4.39"

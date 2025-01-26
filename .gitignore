@@ -1,0 +1,19 @@
+# Ignore build artifacts
+/target/
+**/**/target/**
+out
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.iml
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore other irrelevant files
+*.log
+*.tmp
+*.bak
+*.profraw
