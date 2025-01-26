@@ -42,11 +42,11 @@ impl DriveHubWrapper for GoogleDriveHubAdapter {
     fn fetch_files(&self, query: String) -> Pin<Box<dyn Future<Output=Result<Vec<File>, String>> + Send>> {
         let hub = Arc::clone(&self.hub);
         Box::pin(async move {
-            let result = hub.files().list().add_scope(GDRIVE_SCOPE).q(query.as_str()).doit().await;
+            let result = hub.files().list().add_scope(GDRIVE_SCOPE).q(&query).doit().await;
             match result {
                 Err(e) => Err(format!("HTTP error: {:?}", e)),
                 Ok((response, file_list)) => match response.status() {
-                    StatusCode::OK => Ok(file_list.files.unwrap_or_else(Vec::new)),
+                    StatusCode::OK => Ok(file_list.files.unwrap_or_default()),
                     _ => Err(format!(
                         "Failed to fetch file list. Response status: {}, body: {:?}",
                         response.status(),
@@ -60,7 +60,7 @@ impl DriveHubWrapper for GoogleDriveHubAdapter {
     fn fetch_file_data(&self, file_id: String) -> Pin<Box<dyn Future<Output=Result<Vec<u8>, String>> + Send>> {
         let hub = Arc::clone(&self.hub);
         Box::pin(async move {
-            let access_token = hub.auth.get_token(&[GDRIVE_SCOPE]).await.map_err(|e| format!("Token error: {}", e)).unwrap().unwrap();
+            let access_token = hub.auth.get_token(&[GDRIVE_SCOPE]).await.map_err(|e| format!("Token error: {}", e))?.ok_or("Missing access token")?;
             let url = format!("https://www.googleapis.com/drive/v3/files/{}?alt=media", file_id);
 
             let client = reqwest::Client::new();
@@ -92,7 +92,8 @@ pub trait DataSourceProvider {
 
 impl DataSourceProvider for GoogleDriveDataSource {
     async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error>> {
-        let folder_list = self.hub.fetch_files(build_drive_query(&self.main_folder_id, "and mimeType = 'application/vnd.google-apps.folder'")).await?;
+        let query = build_drive_query(&self.main_folder_id, "and mimeType = 'application/vnd.google-apps.folder'");
+        let folder_list = self.hub.fetch_files(query).await?;
 
         let mut files: Vec<Value> = folder_list
             .into_iter()
@@ -115,7 +116,7 @@ impl DataSourceProvider for GoogleDriveDataSource {
 
         let csv_files = self.hub.fetch_files(query).await?;
         if csv_files.is_empty() {
-            return Err(format!("No files found under the specified ID: {}", &folder_id).into());
+            return Err(format!("No files found under the specified ID: {}", &folder_id));
         }
 
         let csv_file_id = csv_files
@@ -128,10 +129,7 @@ impl DataSourceProvider for GoogleDriveDataSource {
     }
     async fn fetch_json_file_map(&self, source_folder_id: &str, sub_folder_name: &str) -> Result<HashMap<String, String>, String> {
         let folder_id = self.get_subfolder_id(source_folder_id, sub_folder_name).await?;
-
-        let files = self.get_json_file_name_map(folder_id).await?;
-
-        Ok(files)
+        self.get_json_file_name_map(folder_id).await
     }
 }
 
@@ -154,7 +152,7 @@ impl GoogleDriveDataSource {
 
         let subfolders = self.hub.fetch_files(query).await?;
         if subfolders.is_empty() {
-            return Err(format!("Subfolder not found: {}", subfolder_name).into());
+            return Err(format!("Subfolder not found: {}", subfolder_name));
         }
 
         let subfolder_id = subfolders
@@ -169,12 +167,10 @@ impl GoogleDriveDataSource {
         let query = format!("mimeType = 'application/json' and '{}' in parents and trashed = false", folder_id);
 
         let files = self.hub.fetch_files(query).await?;
-        let file_map = files
+        Ok(files
             .into_iter()
             .map(|file| (snake_case_file_to_title_case(file.name.unwrap_or_default().as_str()), file.id.unwrap_or_default()))
-            .collect::<HashMap<String, String>>();
-
-        Ok(file_map)
+            .collect::<HashMap<String, String>>())
     }
 }
 

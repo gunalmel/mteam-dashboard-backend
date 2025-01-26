@@ -69,7 +69,6 @@ async fn test_actions(id: web::Path<String>, context: web::Data<AppContext>) -> 
         .content_type("application/json")
         .streaming(body)
 }
-
 async fn actions(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder {
     // Get the CSV reader
     let reader = match context.datasource_provider.fetch_csv_reader(id.to_string()).await {
