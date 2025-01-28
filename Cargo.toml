@@ -1,7 +1,7 @@
 [workspace]
 resolver = "3"
 members = [
-    "action-processor",
+    "action-processor", "cognitive-load-processor",
     "plotly-processor",
     "web",
 ]
