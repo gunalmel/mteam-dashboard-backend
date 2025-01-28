@@ -1644,6 +1644,7 @@ dependencies = [
  "hyper",
  "hyper-rustls",
  "hyper-util",
+ "lazy_static",
  "log",
  "mteam-dashboard-action-processor",
  "mteam-dashboard-cognitive-load-processor",

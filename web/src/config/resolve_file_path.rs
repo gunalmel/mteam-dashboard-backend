@@ -89,14 +89,18 @@ mod tests_resolve_path {
     use super::*;
     use std::env;
     use std::fs;
-
+    //Becuase tests change the working directory and that's a global state, we need lock for tests to pass when running in parallel
+    lazy_static::lazy_static! {
+        static ref TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    }
     #[test]
     fn relative_path() {
+        let _lock = TEST_MUTEX.lock().unwrap();
         // Create a temporary directory
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_dir_path = temp_dir.path();
 
-        // Set the current executable path to the temporary directory
+        // Set the current working directory to the temporary directory
         env::set_current_dir(&temp_dir_path).unwrap();
 
         // Create a dummy file in the temporary directory
@@ -114,7 +118,6 @@ mod tests_resolve_path {
         println!("Dummy file path: {:?}", dummy_file);
 
         // Canonicalize paths to resolve symlinks
-        // let resolved_path = resolved_path.canonicalize().expect("Failed to canonicalize resolved path");
         let dummy_file = dummy_file.canonicalize().expect("Failed to canonicalize dummy file").to_string_lossy().into_owned();
 
         // Check if the resolved path is correct
@@ -123,6 +126,7 @@ mod tests_resolve_path {
 
     #[test]
     fn path_non_existent() {
+        let _lock = TEST_MUTEX.lock().unwrap();
         // Create a temporary directory
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_dir_path = temp_dir.path();
@@ -139,6 +143,7 @@ mod tests_resolve_path {
 
     #[test]
     fn absolute_path() {
+        let _lock = TEST_MUTEX.lock().unwrap();
         // Create a temporary directory
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_dir_path = temp_dir.path();
@@ -158,6 +163,7 @@ mod tests_resolve_path {
     }
     #[test]
     fn absolute_path_non_existent() {
+        let _lock = TEST_MUTEX.lock().unwrap();
         // Create a temporary directory
         let temp_dir = tempfile::tempdir().unwrap();
         let temp_dir_path = temp_dir.path();

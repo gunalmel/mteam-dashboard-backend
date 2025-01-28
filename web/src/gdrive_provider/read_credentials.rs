@@ -40,6 +40,7 @@ pub(crate) fn read_credentials(source: &str) -> Result<String, String> {
 mod tests {
     use super::*;
     use std::io::Write;
+    use tempfile::tempdir;
 
     const FILE_CONTENT: &str = r#"{
     "type": "service_account",
@@ -62,13 +63,13 @@ mod tests {
         mock_file.write_all(FILE_CONTENT.as_bytes()).unwrap();
         mock_file.set_position(0); // Reset the cursor to the beginning.
                                    // Create a mock path that will be used.
-        let mock_path = "mock_file.json";
+        let temp_dir = tempdir().unwrap();
+        let mock_path = temp_dir.path().join("mock_file.json");
         // Create a mock file in memory
-        fs::write(mock_path, FILE_CONTENT).unwrap();
+        fs::write(&mock_path, FILE_CONTENT).unwrap();
 
-        let result = read_credentials_from_file(mock_path);
+        let result = read_credentials_from_file(mock_path.to_str().unwrap());
 
-        fs::remove_file(mock_path).unwrap();
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), FILE_CONTENT);
     }
@@ -101,17 +102,17 @@ mod tests {
         assert!(result.is_err());
         assert!(result
             .unwrap_err()
-            .starts_with("Environment variable NON_EXISTENT_ENV_VAR not found or invalid:"));
+            .starts_with("Environment variable NON_EXISTENT_ENV_VAR is not set to point at gdrive credentials: environment variable not found"));
     }
 
     #[test]
     fn test_read_credentials_file_success() {
-        let mock_path = "mock_file.json";
-        fs::write(mock_path, FILE_CONTENT).unwrap();
+        let temp_dir = tempdir().unwrap();
+        let mock_path = temp_dir.path().join("mock_file.json");
+        fs::write(&mock_path, FILE_CONTENT).unwrap();
 
-        let result = read_credentials(mock_path);
+        let result = read_credentials(mock_path.to_str().unwrap());
 
-        fs::remove_file(mock_path).unwrap();
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), FILE_CONTENT);
     }
@@ -135,8 +136,8 @@ mod tests {
 
         assert!(result.is_err());
         assert!(result.unwrap_err().contains(&format!(
-            "Neither a file at path '{}' nor an environment variable with that name was found",
-            source
+            "File not found for gdrive credentials: '{}'. Environment variable {} is not set to point at gdrive credentials: environment variable not found",
+            source, source
         )));
     }
 
@@ -147,6 +148,7 @@ mod tests {
         let result = read_credentials(source);
 
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Neither a file at path '/path/that/does/not/exist' nor an environment variable with that name was found: Environment variable /path/that/does/not/exist not found or invalid: environment variable not found"));
+        
+        assert!(result.unwrap_err().contains("File not found for gdrive credentials: '/path/that/does/not/exist'. Environment variable /path/that/does/not/exist is not set to point at gdrive credentials: environment variable not found"));
     }
 }
