@@ -557,10 +557,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cognitive-load-processor"
-version = "0.1.0"
-
-[[package]]
 name = "colorchoice"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1650,12 +1646,22 @@ dependencies = [
  "hyper-util",
  "log",
  "mteam-dashboard-action-processor",
+ "mteam-dashboard-cognitive-load-processor",
  "mteam-dashboard-plotly-processor",
  "reqwest",
  "rustls",
  "serde",
  "serde_json",
  "tempfile",
+]
+
+[[package]]
+name = "mteam-dashboard-cognitive-load-processor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "mteam-dashboard-action-processor",
+ "serde_json",
 ]
 
 [[package]]

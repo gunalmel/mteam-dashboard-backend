@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 actix-web = "4.9.0"
 mteam-dashboard-action-processor = { path = "../action-processor" }
+mteam-dashboard-cognitive-load-processor = { path = "../cognitive-load-processor" }
 mteam-dashboard-plotly-processor = { path = "../plotly-processor" }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.135"

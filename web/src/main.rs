@@ -1,7 +1,6 @@
 use crate::app_context::AppContext;
 use crate::gdrive_provider::google_data_source::GoogleDriveDataSource;
 use crate::gdrive_provider::google_drive_hub_adapter_builder::GoogleDriveHubAdapterBuilder;
-use crate::utils::date::seconds_to_csv_row_time;
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use bytes::{Bytes, BytesMut};
 use config::config::AppConfig;
@@ -15,13 +14,13 @@ use mteam_dashboard_plotly_processor::actions_plot_data::ActionsPlotData;
 use mteam_dashboard_plotly_processor::actions_plot_data_transformers::to_plotly_data;
 use mteam_dashboard_plotly_processor::config::init::init_plot_config;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
-use serde_json::{json, to_string, Deserializer, Value};
+use serde_json::{json, to_string};
 use std::error::Error;
-use std::io::BufReader;
 use std::sync::Arc;
 use std::{env, io};
 use std::pin::Pin;
 use async_stream::stream;
+use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
 
 mod gdrive_provider;
 mod utils;
@@ -93,11 +92,44 @@ async fn actions(id: web::Path<String>, context: web::Data<AppContext>) -> impl 
         Err(_) => HttpResponse::InternalServerError().body("Failed to serialize result"),
     }
 }
-// async fn cognitive_load(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder{
-//     process_json_file(id.to_string(), context.datasource_provider.clone()).await
-//         .map(|data| HttpResponse::Ok().json(data))
-//         .unwrap_or_else(|e| HttpResponse::NotFound().json(serde_json::json!({"Not found": format!("Failed to get cognitive load data: {:#?}", e)})))
-// }
+async fn cognitive_load(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder {
+    let mut file_reader = context.datasource_provider.fetch_json_reader(id.to_string()).await.map_err(|e| e.to_string()).unwrap();
+    match process_cognitive_load_data(&mut *file_reader).await {
+        Ok(iterator) => {
+            let stream = stream! { // Start the JSON object
+                    yield Ok(Bytes::from("{\"x\":[".to_string()));
+                    let mut y_bytes = BytesMut::new();
+                    y_bytes.extend_from_slice(b"],\"y\":[");
+
+                    let mut first = true;
+
+                    for (x, y) in iterator {
+                        if !first {
+                            y_bytes.extend_from_slice(b",");
+                            yield Ok(Bytes::from(",".to_string()));
+                        }
+                        first = false;
+                        let x_point = json!(x);
+                        let y_point = json!(y);
+                        y_bytes.extend_from_slice(to_string(&y_point).unwrap().as_bytes());
+                        yield Ok(Bytes::from(to_string(&x_point).unwrap()));
+                    }
+
+                    yield Ok(y_bytes.freeze());
+
+                    // Close the `y` array and add other fields
+                    yield Ok(Bytes::from("],\"mode\":\"lines\",\"type\":\"scatter\"}".to_string()));
+                };
+            let body: Pin<Box<dyn Stream<Item = Result<Bytes, io::Error>> + Send>> = Box::pin(stream);
+            HttpResponse::Ok()
+                .content_type("application/json")
+                .streaming(body)
+        }
+        Err(err) => {
+            HttpResponse::InternalServerError().json(json!({"error": "Failed to process cognitive load data", "details": err}))
+        }
+    }
+}
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -167,82 +199,3 @@ fn get_app_config() -> Result<AppConfig, Box<dyn Error>> {
     debug!("Loaded config: {:#?}", config);
     Ok(config)
 }
-
-async fn process_json_file(file_id: &str, data_source: Arc<GoogleDriveDataSource>) -> Result<impl Iterator<Item=(String, Option<f64>)>, String> {
-    let reader = data_source.fetch_json_reader(file_id.to_owned()).await.map_err(|e| e.to_string())?;
-    debug!("Processing JSON file: {}", file_id);
-
-    let buf_reader = BufReader::new(reader);
-    let mut stream = Deserializer::from_reader(buf_reader).into_iter::<Value>();
-
-    let root_array = match stream.next() {
-        Some(Ok(Value::Array(root))) => root,
-        Some(Ok(_)) => return Err("JSON root is not an array".to_string()),
-        Some(Err(e)) => return Err(format!("Error deserializing JSON root: {}", e)),
-        None => return Err("JSON is empty".to_string()),
-    };
-
-    let mut first_timestamp: Option<f64> = None;
-
-    Ok(root_array.into_iter().filter_map(move |item| {
-        if let Value::Array(arr) = item {
-            if let (Some(x), y) = (arr.get(0).and_then(Value::as_f64), arr.get(1).and_then(Value::as_f64)) {
-                if first_timestamp.is_none() {
-                    first_timestamp = Some(x);
-                }
-
-                if let Some(start_time) = first_timestamp {
-                    let elapsed_seconds = (x - start_time) as u32;
-                    let csv_row_time = seconds_to_csv_row_time(elapsed_seconds);
-                    return Some((csv_row_time.date_string, y));
-                }
-            }
-        }
-        None
-    }))
-}
-
-async fn cognitive_load(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder {
-    let stream = stream! {
-        match process_json_file(id.as_str(), context.datasource_provider.clone()).await {
-            Ok(iterator) => {
-                // Start the JSON object
-                yield Ok(Bytes::from("{\"x\":[".to_string()));
-                let mut y_bytes = BytesMut::new();
-                y_bytes.extend_from_slice(b"],\"y\":[");
-                
-                let mut first = true;
-                
-                for (x, y) in iterator {
-                    if !first {
-                        y_bytes.extend_from_slice(b",");
-                        yield Ok(Bytes::from(",".to_string()));
-                    }
-                    first = false;
-                    let x_point = json!(x);
-                    let y_point = json!(y);
-                    y_bytes.extend_from_slice(to_string(&y_point).unwrap().as_bytes());
-                    yield Ok(Bytes::from(to_string(&x_point).unwrap()));
-                }
-
-                yield Ok(y_bytes.freeze());
-
-                // Close the `y` array and add other fields
-                yield Ok(Bytes::from("],\"mode\":\"lines\",\"type\":\"scatter\"}".to_string()));
-            }
-            Err(err) => {
-                yield Err(io::Error::new(io::ErrorKind::Other, err));
-            }
-        }
-    };
-    // Create the streaming response
-
-    // Convert the stream to a Pin<Box<dyn Stream>>
-    let body: Pin<Box<dyn Stream<Item = Result<Bytes, io::Error>> + Send>> = Box::pin(stream);
-
-    // Return an HTTP response
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .streaming(body)
-}
-

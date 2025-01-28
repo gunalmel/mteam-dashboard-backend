@@ -10,4 +10,3 @@ pub mod actions_plot_builders;
 pub mod actions_plot_data_transformers;
 pub mod missed_action_coordinates_calculator;
 pub mod config;
-pub mod congnitive_load_plot_data;
