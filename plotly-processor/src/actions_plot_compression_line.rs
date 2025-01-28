@@ -9,7 +9,7 @@ pub struct CompressionLine {
     pub text: String,
     pub mode: String,
     #[serde(rename = "type")]
-    pub line_type: String,
+    pub series_type: String,
     pub hoverinfo: String,
     pub textposition: String,
     pub textfont: Font,

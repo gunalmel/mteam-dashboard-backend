@@ -1,11 +1,11 @@
-use crate::compression_line::CompressionLine;
+use crate::actions_plot_compression_line::CompressionLine;
 use crate::config::plotly_mappings::PlotlyConfig;
 use crate::font::Font;
 use crate::image::Image;
 use crate::layout::Layout;
 use crate::missed_action_coordinates_calculator::{seconds_to_date_time_string, MissedActionsCoordinatesIterator, Rectangle};
-use crate::plotly_builders::create_compression_line;
-use crate::scatter_plot_data::ActionsPlotDataItem::{Lines, Points};
+use crate::actions_plot_builders::create_compression_line;
+use crate::actions_plot_data::ActionsPlotDataItem::{Lines, Points};
 use crate::shape::Shape;
 use mteam_dashboard_action_processor::plot_structures::PlotLocation;
 use serde::{Deserialize, Serialize};
@@ -23,15 +23,15 @@ pub struct ActionsPlotSeries {
     pub x: Vec<String>,
     pub y: Vec<String>,
     pub text: Vec<String>,
-    pub hovertext: Vec<String>,
-    pub customdata: Vec<String>,
-    pub marker: Marker,
     pub mode: String,
     #[serde(rename = "type")]
     pub series_type: String,
     pub hoverinfo: String,
     pub textposition: String,
     pub textfont: Font,
+    pub hovertext: Vec<String>,
+    pub customdata: Vec<String>,
+    pub marker: Marker,
     #[serde(skip)]
     pub images: Vec<Image>,
     #[serde(skip)]

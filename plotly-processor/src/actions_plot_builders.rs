@@ -1,5 +1,5 @@
 use crate::annotation::Annotation;
-use crate::compression_line::CompressionLine;
+use crate::actions_plot_compression_line::CompressionLine;
 use crate::font::Font;
 use crate::image::Image;
 use crate::line::Line;
@@ -30,7 +30,7 @@ pub fn create_compression_line(start: PlotLocation, end: PlotLocation, y:String)
         hovertext: vec![start.timestamp.timestamp, end.timestamp.timestamp],
         text: "".to_owned(),
         mode: "lines".to_owned(),
-        line_type: "scatter".to_owned(),
+        series_type: "scatter".to_owned(),
         hoverinfo: "text".to_owned(),
         textposition: "top center".to_owned(),
         textfont: Font {

@@ -67,6 +67,10 @@ impl DataSource for GoogleDriveDataSource {
 
         Ok(files)
     }
+    async fn fetch_json_reader(&self, file_id: String) -> Result<Box<dyn Read>, String> {
+        let data = self.hub.fetch_file_data(file_id).await?;
+        Ok(Box::new(std::io::Cursor::new(data)))
+    }
     async fn fetch_csv_reader(&self, folder_id: String) -> Result<Box<dyn Read>, String> {
         let query = format!(
             "mimeType contains 'text/' and '{}' in parents and trashed = false",

@@ -1,9 +1,9 @@
 use crate::config::plotly_mappings::PlotlyConfig;
-use crate::plotly_builders::{
+use crate::actions_plot_builders::{
     create_annotation, create_image
     , create_shape,
 };
-use crate::scatter_plot_data::{ActionGroup, ActionsPlotData, ActionsPlotDataCollector};
+use crate::actions_plot_data::{ActionGroup, ActionsPlotData, ActionsPlotDataCollector};
 use mteam_dashboard_action_processor::plot_structures::{
     Action, ActionPlotPoint, ErroneousAction, MissedAction, PeriodType, PlotLocation,
 };
