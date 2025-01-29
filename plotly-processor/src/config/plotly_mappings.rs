@@ -1,9 +1,9 @@
-use std::{fmt, fs, io, path::Path};
+use serde::de::{Error, SeqAccess, Visitor};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::Error as SerdeError;
 use std::borrow::ToOwned;
-use serde_json::{Error as SerdeError, Value};
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::de::Error;
+use std::{fmt, fs, io, path::Path};
 
 #[derive(Debug)]
 pub enum ConfigError {
@@ -58,6 +58,49 @@ pub struct ActionsPlotSettings {
     pub missed_actions: MissedActionsPlotSettings
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct VisualAttentionPlotSettings {
+    #[serde(rename = "windowSizeSeconds")]
+    pub window_size_secs: u32,
+    #[serde(rename = "orderedColorMap", deserialize_with = "ordered_color_map")]
+    pub ordered_category_color_tuples: Vec<(String, String)>
+}
+
+fn ordered_color_map<'de, D>(deserializer: D) -> Result<Vec<(String, String)>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    struct OrderedColorMapVisitor;
+
+    impl<'de> Visitor<'de> for OrderedColorMapVisitor {
+        type Value = Vec<(String, String)>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a JSON array of 2-element arrays (e.g., [[\"category1\", \"#ff0000\"], [\"category2\", \"#00ff00\"]])")
+        }
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+        where
+            A: SeqAccess<'de>,
+        {
+            let mut result = Vec::new();
+
+            while let Some(item) = seq.next_element::<Vec<String>>()? {
+                if item.len() != 2 {
+                    return Err(Error::custom("Each entry must be a 2-element array of strings"));
+                }
+                let key = item[0].clone();
+                let value = item[1].clone();
+                result.push((key, value));
+            }
+
+            Ok(result)
+        }
+    }
+
+    deserializer.deserialize_seq(OrderedColorMapVisitor)
+}
+
 const DEFAULT_ACTION_GROUP_NAME: &str = "default_group_name";
 const DEFAULT_ACTION_GROUP_ICON_ATTR: &str = "default"; 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -66,7 +109,7 @@ pub struct PlotlyConfig {
     pub action_groups: HashMap<String, String>,
     pub action_group_icons: HashMap<String, String>,
     pub action_plot_settings: ActionsPlotSettings,
-    pub visual_attention_colors: Vec<(String, String)>,
+    pub visual_attention_plot_settings: VisualAttentionPlotSettings
 }
 impl PlotlyConfig {
     pub fn get_action_group_name(&self, action_name: &str) -> String{
@@ -90,14 +133,14 @@ impl PlotlyConfig {
         let action_groups: HashMap<String, String> = load_json(config_dir.join("action-groups.json"))?;
         let action_group_icons: HashMap<String, String> = load_json(config_dir.join("action-group-icons.json"))?;
         let action_plot_settings: ActionsPlotSettings = load_json(config_dir.join("action-plot-settings.json"))?;
-        let visual_attention_colors: Vec<(String,String)> = load_json_arr_of_tuples(config_dir.join("visual-attention-colors.json"))?;
+        let visual_attention_plot_settings: VisualAttentionPlotSettings = load_json(config_dir.join("visual-attention-plot-settings.json"))?;
 
         Ok(PlotlyConfig {
             stages: stage_names,
             action_groups,
             action_group_icons,
             action_plot_settings,
-            visual_attention_colors
+            visual_attention_plot_settings
         })
     }
 }
@@ -110,32 +153,4 @@ fn load_json<T: for<'de> Deserialize<'de>>(path: impl AsRef<Path>) -> Result<T, 
     let content = fs::read_to_string(path.as_ref())?;
     let data = serde_json::from_str(&content)?;
     Ok(data)
-}
-
-fn load_json_arr_of_tuples<T: for<'de> Deserialize<'de>>(path: impl AsRef<Path>) -> Result<Vec<(String, T)>, ConfigError> {
-    let content = fs::read_to_string(path.as_ref()).map_err(ConfigError::Io)?;
-    let data: Value = serde_json::from_str(&content).map_err(ConfigError::Serde)?;
-
-    if let Value::Array(arr) = data {
-        let mut result = Vec::with_capacity(arr.len());
-
-        for item in arr.iter() {
-            if let Value::Array(tuple) = item {
-                if tuple.len() != 2 {
-                    return Err(ConfigError::Serde(serde_json::Error::custom("Expected array of 2 elements")));
-                }
-                let first = tuple.get(0).unwrap();
-                let second = tuple.get(1).unwrap();
-                let key: String = serde_json::from_value(first.clone()).map_err(ConfigError::Serde)?;
-                let value: T = serde_json::from_value(second.clone()).map_err(ConfigError::Serde)?;
-                result.push((key, value));
-            } else {
-                return Err(ConfigError::Serde(serde_json::Error::custom("Expected array of arrays")));
-            }
-        }
-
-        Ok(result)
-    } else {
-        Err(ConfigError::Serde(serde_json::Error::custom("Expected JSON array")))
-    }
 }

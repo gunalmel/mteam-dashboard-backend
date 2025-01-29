@@ -1,18 +1,18 @@
-use crate::actions::actions_plot_compression_line::CompressionLine;
+use crate::actions::compression_line::CompressionLine;
 use crate::config::plotly_mappings::PlotlyConfig;
 use crate::font::Font;
 use crate::image::Image;
 use crate::layout::Layout;
 use crate::actions::missed_action_coordinates_calculator::{seconds_to_date_time_string, MissedActionsCoordinatesIterator, Rectangle};
-use crate::actions::actions_plot_builders::create_compression_line;
-use crate::actions::actions_plot_data::ActionsPlotDataItem::{Lines, Points};
+use crate::actions::builders::create_compression_line;
+use crate::actions::plot_data::ActionsPlotDataItem::{Lines, Points};
 use crate::shape::Shape;
 use mteam_dashboard_action_processor::plot_structures::PlotLocation;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct Marker {
+pub struct Marker {
     pub size: i8,
     pub symbol: String,
     pub color: Vec<String>

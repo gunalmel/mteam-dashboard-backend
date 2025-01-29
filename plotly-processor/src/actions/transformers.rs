@@ -1,9 +1,9 @@
 use crate::config::plotly_mappings::PlotlyConfig;
-use crate::actions::actions_plot_builders::{
+use crate::actions::builders::{
     create_annotation, create_image
     , create_shape,
 };
-use crate::actions::actions_plot_data::{ActionGroup, ActionsPlotData, ActionsPlotDataCollector};
+use crate::actions::plot_data::{ActionGroup, ActionsPlotData, ActionsPlotDataCollector};
 use mteam_dashboard_action_processor::plot_structures::{
     Action, ActionPlotPoint, ErroneousAction, MissedAction, PeriodType, PlotLocation,
 };
@@ -80,7 +80,7 @@ fn process_missed_action(action: MissedAction, data_collector: &mut ActionsPlotD
     };
 
     data_collector.missed_actions_series.hovertext.push(hover_text);
-    data_collector.actions_series.marker.color.push("rgba(249, 105, 14, 0.8)".to_owned());
+    data_collector.missed_actions_series.marker.color.push("rgba(249, 105, 14, 0.8)".to_owned());
 
     data_collector.add_missed_action_stage(&action.location.stage);
     

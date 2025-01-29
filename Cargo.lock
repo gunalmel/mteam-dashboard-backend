@@ -1672,6 +1672,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "mteam-dashboard-action-processor",
+ "mteam-dashboard-visual-attention-processor",
  "once_cell",
  "serde",
  "serde_json",

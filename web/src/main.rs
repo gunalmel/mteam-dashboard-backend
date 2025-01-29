@@ -10,26 +10,17 @@ use futures::StreamExt;
 use futures::{stream, Stream};
 use gdrive_provider::data_source::DataSource;
 use log::debug;
-use mteam_dashboard_action_processor::plot_structures::CsvRowTime;
 use mteam_dashboard_action_processor::process_csv;
-use mteam_dashboard_utils::date_parser::seconds_to_csv_row_time;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
-use mteam_dashboard_plotly_processor::actions::actions_plot_data::ActionsPlotData;
-use mteam_dashboard_plotly_processor::actions::actions_plot_data_transformers::to_plotly_data;
+use mteam_dashboard_plotly_processor::actions::plot_data::ActionsPlotData;
 use mteam_dashboard_plotly_processor::config::init::init_plot_config;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
-use serde::{Deserialize, Serialize};
-use serde_json::{from_str, json, to_string, Deserializer, Value};
-use std::cell::RefCell;
-use std::collections::{HashMap, VecDeque};
+use mteam_dashboard_plotly_processor::{actions, visual_attention};
+use serde_json::{json, to_string};
 use std::error::Error;
-use std::io::{BufReader, Cursor, Read};
 use std::pin::Pin;
-use std::rc::Rc;
 use std::sync::Arc;
 use std::{env, io};
-use mteam_dashboard_utils::json::parse_json_array_root;
-use mteam_dashboard_visual_attention_processor::file_processor::process_visual_attention_data;
 
 mod app_context;
 mod config;
@@ -91,22 +82,14 @@ async fn test_actions(id: web::Path<String>, context: web::Data<AppContext>) -> 
         .streaming(body)
 }
 async fn actions(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder {
-    // Get the CSV reader
-    let reader = match context
-        .datasource_provider
-        .fetch_csv_reader(id.to_string())
-        .await
-    {
+    let reader = match context.datasource_provider.fetch_csv_reader(id.to_string()).await {
         Ok(r) => r,
         Err(_) => return HttpResponse::NotFound().body("Failed to get actions reader"),
     };
 
-    // Process the CSV data
     let actions_iterator = process_csv(reader, 10);
-    let actions_plot_data: ActionsPlotData =
-        to_plotly_data(context.plotly_config, actions_iterator);
+    let actions_plot_data: ActionsPlotData = actions::transformers::to_plotly_data(context.plotly_config, actions_iterator);
 
-    // Serialize the data
     match to_string(&actions_plot_data) {
         Ok(json) => HttpResponse::Ok()
             .content_type("application/json")
@@ -157,6 +140,24 @@ async fn cognitive_load(id: web::Path<String>, context: web::Data<AppContext>) -
             .json(json!({"error": "Failed to process cognitive load data", "details": err})),
     }
 }
+async fn visual_attention(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder{
+    let mut file_reader = context
+        .datasource_provider
+        .fetch_json_reader(id.to_string())
+        .await
+        .map_err(|e| e.to_string())
+        .unwrap();
+    let window_duration_secs = context.plotly_config.visual_attention_plot_settings.window_size_secs;
+
+    let visual_attention_plot_data = visual_attention::transformers::to_plotly_data(&mut file_reader, window_duration_secs, &context.plotly_config);
+
+    match to_string(&visual_attention_plot_data) {
+        Ok(json) => HttpResponse::Ok()
+            .content_type("application/json")
+            .body(json),
+        Err(_) => HttpResponse::InternalServerError().body("Failed to serialize result"),
+    }
+}
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -164,32 +165,33 @@ async fn hello() -> impl Responder {
 const CREDENTIALS_FILE_HOME: &str =
     "/Users/gunalmel/Downloads/mteam-dashboard-447216-9836ce4f74a2.json";
 
-// #[actix_web::main]
-// async fn main() -> io::Result<()> {
-//     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-//
-//     let config = get_app_config().unwrap();
-//     let plotly_config = get_plotly_config(&config);
-//     let datasource_provider = get_datasource_provider(&config).await;
-//
-//     HttpServer::new(move || {
-//         App::new()
-//             .wrap(middleware::Compress::default())
-//             .app_data(web::Data::new(AppContext {
-//                 datasource_provider: datasource_provider.clone(),
-//                 plotly_config
-//             }))
-//             .service(hello)
-//             .route("/data-sources", web::get().to(data_sources))
-//             .route("/data-sources/{data_source_id}/{plot_name}", web::get().to(plot_sources))
-//             .route("/actions/raw/{id}", web::get().to(test_actions))
-//             .route("/actions/plotly/{id}", web::get().to(actions))
-//             .route("/cognitive-load/plotly/{id}", web::get().to(cognitive_load))
-//     })
-//         .bind(("0.0.0.0", 8080))?
-//         .run()
-//         .await
-// }
+#[actix_web::main]
+async fn main() -> io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
+    let config = get_app_config().unwrap();
+    let plotly_config = get_plotly_config(&config);
+    let datasource_provider = get_datasource_provider(&config).await;
+
+    HttpServer::new(move || {
+        App::new()
+            .wrap(middleware::Compress::default())
+            .app_data(web::Data::new(AppContext {
+                datasource_provider: datasource_provider.clone(),
+                plotly_config
+            }))
+            .service(hello)
+            .route("/data-sources", web::get().to(data_sources))
+            .route("/data-sources/{data_source_id}/{plot_name}", web::get().to(plot_sources))
+            .route("/actions/raw/{id}", web::get().to(test_actions))
+            .route("/actions/plotly/{id}", web::get().to(actions))
+            .route("/cognitive-load/plotly/{id}", web::get().to(cognitive_load))
+            .route("/visual-attention/plotly/{id}", web::get().to(visual_attention))
+    })
+        .bind(("0.0.0.0", 8080))?
+        .run()
+        .await
+}
 
 async fn get_datasource_provider(config: &AppConfig) -> Arc<GoogleDriveDataSource> {
     let gdrive_credentials_file = resolve_first_path(&[
@@ -238,133 +240,5 @@ fn get_app_config() -> Result<AppConfig, Box<dyn Error>> {
     Ok(config)
 }
 
-#[actix_web::main]
-async fn main() -> io::Result<()> {
-    let data = r#"[{
-"time": 0.8,
-"object": "Middle Part Vital Cognitive",
-"category": "Monitors"
-},
-{
-"time": 0.8,
-"object": "",
-"category": "Team"
-},
-{
-"time": 0.8,
-"object": "A",
-"category": null
-},
-{
-"time": 0.9,
-"object": "null",
-"category": "Monitors"
-},
-{
-"time": 4,
-"object": "Middle Part Vital Cognitive",
-"category": "Others"
-},
-{
-"time": 5.8,
-"object": "Middle Part Vital Cognitive",
-"category": "Team"
-},
-{
-"time": 6,
-"object": "X",
-"category": null
-},
-{
-"time": 6.6,
-"object": "Middle Part Vital Cognitive",
-"category": "Patient"
-},
-{
-"time": 7.8,
-"object": "Middle Part Vital Cognitive",
-"category": "Monitors"
-},
-{
-"time": 8.6,
-"object": "Middle Part Vital Cognitive",
-"category": "Tablet"
-},
-{
-"time": 8.7,
-"object": "Middle Part Vital Cognitive",
-"category": "Patient"
-},
-{
-"time": 9.8,
-"object": "Middle Part Vital Cognitive",
-"category": "Monitors"
-},
-{
-"time": 10,
-"object": "Middle Part Vital Cognitive",
-"category": "Equipment"
-},
-{
-"time": 10.1,
-"object": "Middle Part Vital Cognitive",
-"category": "Equipment"
-}]"#;
-
-    let config = get_plotly_config(&get_app_config().unwrap());
-    let stream: Vec<Value> = from_str(data).unwrap(); // Deserialize once
-
-    let window_duration_secs = 10;
-    let cursor = Cursor::new(serde_json::to_vec(&stream).unwrap()); // Convert to Cursor
-
-    let mut reader = cursor;
-    let ref mut category_map = HashMap::new();
-
-    process_visual_attention_data(&mut reader, window_duration_secs)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))? // Convert String error to io::Error
-        .for_each(|(category, time, ratio)| {
-            let point = category_map.entry(category.clone()).or_insert_with(||VisualAttentionCategory{
-                x: vec![],
-                y: vec![],
-                name: category,
-                plot_type: "bar".to_owned(),
-                marker: HashMap::new()
-            });
-            point.x.push(time);
-            point.y.push(ratio);
-        });
-
-    let mut ordered_categories = Vec::new();
-
-    // println!("{:#?}", category_map);
-    for (category, color) in &config.visual_attention_colors {
-        if let Some(mut category_data) = category_map.remove(category) {
-            category_data.marker.insert("color".to_owned(), color.to_owned());
-            ordered_categories.push(category_data);
-        }
-    }
-    println!("{:#?}", ordered_categories);
-    // match to_string(&ordered_categories) {
-    //     Ok(json) => println!("{:#?}", json),
-    //     Err(e) => eprintln!("Serialization error: {}", e),
-    // }
-
-    // match to_string(&category_map.values().collect::<Vec<_>>()) {
-    //     Ok(json) => println!("{:#?}", json),
-    //     Err(e) => eprintln!("Serialization error: {}", e),
-    // }
-
-    Ok(())
-}
 
 
-
-#[derive(Serialize, Deserialize, Debug)]
-struct VisualAttentionCategory {
-    x: Vec<String>,
-    y: Vec<f64>,
-    name: String,
-    #[serde(rename = "type")]
-    plot_type: String,
-    marker: HashMap<String, String> //will only set color
-}

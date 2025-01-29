@@ -7,4 +7,4 @@ pub mod layout;
 pub mod config;
 pub mod actions;
 #[path = "visual-attention/mod.rs"]
-mod visual_attention;
+pub mod visual_attention;

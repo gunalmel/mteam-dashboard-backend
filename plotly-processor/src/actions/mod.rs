@@ -1,5 +1,5 @@
-mod actions_plot_compression_line;
-pub mod actions_plot_data;
-mod actions_plot_builders;
-pub mod actions_plot_data_transformers;
+mod compression_line;
+pub mod plot_data;
+mod builders;
+pub mod transformers;
 mod missed_action_coordinates_calculator;
