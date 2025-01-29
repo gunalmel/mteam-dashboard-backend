@@ -1,0 +1,9 @@
+[package]
+name = "mteam-dashboard-utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0.138"
+chrono = "0.4.39"
+mteam-dashboard-action-processor = { path = "../action-processor" }

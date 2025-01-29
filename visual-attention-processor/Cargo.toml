@@ -1,8 +1,8 @@
 [package]
-name = "mteam-dashboard-cognitive-load-processor"
+name = "mteam-dashboard-visual-attention-processor"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde_json = "1.0.137"
+serde_json = "1.0.138"
 mteam-dashboard-utils = { path = "../utils" }

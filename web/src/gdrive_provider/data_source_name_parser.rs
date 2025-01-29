@@ -1,11 +1,11 @@
-use crate::utils::date;
 use chrono::NaiveDateTime;
 use google_drive3::api::File;
 use serde_json::{json, Value};
+use mteam_dashboard_utils::date_parser;
 
 pub(crate) fn gdrive_folder_to_location(folder: File) -> Option<Value> {
     if let Some(name) = folder.name {
-        let date_result = date::parse_date(&*name);
+        let date_result = date_parser::parse_date(&*name);
         match date_result {
             Ok(date) => {
                 let json_result = create_json(&*folder.id.unwrap(), &*name, date);

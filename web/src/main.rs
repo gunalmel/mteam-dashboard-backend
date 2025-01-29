@@ -12,7 +12,7 @@ use gdrive_provider::data_source::DataSource;
 use log::debug;
 use mteam_dashboard_action_processor::plot_structures::CsvRowTime;
 use mteam_dashboard_action_processor::process_csv;
-use mteam_dashboard_cognitive_load_processor::date_parser::seconds_to_csv_row_time;
+use mteam_dashboard_utils::date_parser::seconds_to_csv_row_time;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
 use mteam_dashboard_plotly_processor::actions_plot_data::ActionsPlotData;
 use mteam_dashboard_plotly_processor::actions_plot_data_transformers::to_plotly_data;
@@ -28,11 +28,12 @@ use std::pin::Pin;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::{env, io};
+use mteam_dashboard_utils::json::parse_json_array_root;
+use mteam_dashboard_visual_attention_processor::file_processor::process_visual_attention_data;
 
 mod app_context;
 mod config;
 mod gdrive_provider;
-mod utils;
 
 async fn data_sources(context: web::Data<AppContext>) -> impl Responder {
     match context.datasource_provider.get_main_folder_list().await {
@@ -238,7 +239,7 @@ fn get_app_config() -> Result<AppConfig, Box<dyn Error>> {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> io::Result<()> {
     let data = r#"[{
 "time": 0.8,
 "object": "Middle Part Vital Cognitive",
@@ -301,116 +302,12 @@ async fn main() -> std::io::Result<()> {
     let cursor = Cursor::new(serde_json::to_vec(&stream).unwrap()); // Convert to Cursor
 
     let mut reader = cursor;
-    if let Ok(normalized_data) = normalize_visual_attention_load_data(&mut reader).await {
-        aggregate_category_ratios(normalized_data, window_duration_secs).for_each(
-            |(category, date, ratio)| {
-                println!("{} {} {}", category, date, ratio);
-            },
-        );
-    }
+    process_visual_attention_data(&mut reader, window_duration_secs)
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))? // Convert String error to io::Error
+        .for_each(|(category, time, ratio)| {
+            println!("Time: {}, Category: {}, Ratio: {}", time, category, ratio);
+        });
+
 
     Ok(())
-}
-
-pub fn map_time_to_date(visual_attention_data: Value, first_timestamp: Option<f64>) -> Option<(f64, Option<String>, Option<f64>)> {
-    if let Value::Object(map) = visual_attention_data {
-        let time = map.get("time")?.as_f64()?;
-        let category = map
-            .get("category")
-            .and_then(|v| v.as_str().map(String::from));
-        let start_seconds = first_timestamp.unwrap_or(time);
-        let normalized_seconds = time - start_seconds;
-        Some((
-            normalized_seconds,
-            category,
-            Some(start_seconds),
-        ))
-    } else {
-        None
-    }
-}
-
-fn parse_json_root<R: Read>(reader: R) -> Result<Vec<Value>, String> {
-    let buf_reader = BufReader::new(reader);
-    let mut stream = Deserializer::from_reader(buf_reader).into_iter::<Value>();
-
-    match stream.next() {
-        Some(Ok(Value::Array(root))) => Ok(root),
-        Some(Ok(_)) => Err("JSON root is not an array".to_string()),
-        Some(Err(e)) => Err(format!("Error deserializing JSON root: {}", e)),
-        None => Err("JSON is empty".to_string()),
-    }
-}
-pub async fn normalize_visual_attention_load_data(reader: &mut impl Read) -> Result<impl Iterator<Item = (f64, Option<String>)>, String> {
-    let root_array = parse_json_root(reader)?;
-
-    Ok(root_array.into_iter().scan(None, |state, item| {
-        let mapped_time =
-            map_time_to_date(item, *state).map(|(date_time, cognitive_load, first_timestamp)| {
-                *state = first_timestamp;
-                (date_time, cognitive_load)
-            });
-
-        mapped_time
-    }))
-}
-
-pub fn aggregate_category_ratios(data_iter: impl Iterator<Item = (f64, Option<String>)>, window_size: u32) -> impl Iterator<Item = (String, String, f64)> {
-    let sliding_window = SlidingWindow {
-        data_iter,
-        window_start: 0,
-        window_end: window_size,
-        window_size,
-        category_count: Default::default(),
-        total_count: 0,
-    };
-
-    sliding_window.flat_map(|results| results.into_iter())
-}
-
-struct SlidingWindow<I: Iterator<Item = (f64, Option<String>)>> {
-    data_iter: I,
-    window_start: u32,
-    window_end: u32,
-    window_size: u32,
-    category_count: HashMap<String, usize>,
-    total_count: usize,
-}
-
-impl<I: Iterator<Item = (f64, Option<String>)>> Iterator for SlidingWindow<I> {
-    type Item = Vec<(String, String, f64)>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut results = Vec::new();
-        while let Some((time, category)) = self.data_iter.next() {
-            if time > self.window_end as f64 {
-                for (cat, count) in self.category_count.drain() {
-                    let window_end_date = seconds_to_csv_row_time(self.window_end).date_string;
-                    results.push((cat, window_end_date, count as f64 / self.total_count as f64));
-                }
-                self.window_start = self.window_end;
-                self.window_end += self.window_size;
-                self.total_count = 0;
-                self.category_count.clear();
-            }
-
-            if let Some(cat) = category {
-                *self.category_count.entry(cat.clone()).or_insert(0) += 1;
-                self.total_count += 1;
-            }
-        }
-
-        if self.total_count > 0 {
-            for (cat, count) in self.category_count.drain() {
-                let window_end_date = seconds_to_csv_row_time(self.window_end).date_string;
-                results.push((cat, window_end_date, count as f64 / self.total_count as f64));
-            }
-        }
-
-        if results.is_empty() {
-            None
-        } else {
-            Some(results)
-        }
-    }
 }

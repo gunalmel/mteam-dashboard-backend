@@ -1649,6 +1649,8 @@ dependencies = [
  "mteam-dashboard-action-processor",
  "mteam-dashboard-cognitive-load-processor",
  "mteam-dashboard-plotly-processor",
+ "mteam-dashboard-utils",
+ "mteam-dashboard-visual-attention-processor",
  "reqwest",
  "rustls",
  "serde",
@@ -1660,8 +1662,7 @@ dependencies = [
 name = "mteam-dashboard-cognitive-load-processor"
 version = "0.1.0"
 dependencies = [
- "chrono",
- "mteam-dashboard-action-processor",
+ "mteam-dashboard-utils",
  "serde_json",
 ]
 
@@ -1673,6 +1674,23 @@ dependencies = [
  "mteam-dashboard-action-processor",
  "once_cell",
  "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "mteam-dashboard-utils"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "mteam-dashboard-action-processor",
+ "serde_json",
+]
+
+[[package]]
+name = "mteam-dashboard-visual-attention-processor"
+version = "0.1.0"
+dependencies = [
+ "mteam-dashboard-utils",
  "serde_json",
 ]
 
@@ -2204,9 +2222,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.137"
+version = "1.0.138"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "930cfb6e6abf99298aaad7d29abbef7a9999a9a8806a40088f55f0dcec03146b"
+checksum = "d434192e7da787e94a6ea7e9670b26a036d0ca41e0b7efb2676dd32bae872949"
 dependencies = [
  "itoa",
  "memchr",
@@ -2619,10 +2637,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "visual-attention-processor"
-version = "0.1.0"
 
 [[package]]
 name = "want"

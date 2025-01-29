@@ -1,5 +1,5 @@
 use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
-use crate::utils::strings::snake_case_file_to_title_case;
+use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
 use std::collections::HashMap;
 use std::error::Error;
 use std::sync::Arc;
