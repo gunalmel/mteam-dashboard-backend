@@ -1,5 +1,5 @@
 use crate::annotation::Annotation;
-use crate::actions_plot_compression_line::CompressionLine;
+use crate::actions::actions_plot_compression_line::CompressionLine;
 use crate::font::Font;
 use crate::image::Image;
 use crate::line::Line;

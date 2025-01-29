@@ -14,8 +14,8 @@ use mteam_dashboard_action_processor::plot_structures::CsvRowTime;
 use mteam_dashboard_action_processor::process_csv;
 use mteam_dashboard_utils::date_parser::seconds_to_csv_row_time;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
-use mteam_dashboard_plotly_processor::actions_plot_data::ActionsPlotData;
-use mteam_dashboard_plotly_processor::actions_plot_data_transformers::to_plotly_data;
+use mteam_dashboard_plotly_processor::actions::actions_plot_data::ActionsPlotData;
+use mteam_dashboard_plotly_processor::actions::actions_plot_data_transformers::to_plotly_data;
 use mteam_dashboard_plotly_processor::config::init::init_plot_config;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
 use serde::{Deserialize, Serialize};
@@ -247,18 +247,33 @@ async fn main() -> io::Result<()> {
 },
 {
 "time": 0.8,
-"object": "Middle Part Vital Cognitive",
+"object": "",
 "category": "Team"
 },
 {
+"time": 0.8,
+"object": "A",
+"category": null
+},
+{
 "time": 0.9,
-"object": "Middle Part Vital Cognitive",
+"object": "null",
 "category": "Monitors"
+},
+{
+"time": 4,
+"object": "Middle Part Vital Cognitive",
+"category": "Others"
 },
 {
 "time": 5.8,
 "object": "Middle Part Vital Cognitive",
 "category": "Team"
+},
+{
+"time": 6,
+"object": "X",
+"category": null
 },
 {
 "time": 6.6,
@@ -291,23 +306,65 @@ async fn main() -> io::Result<()> {
 "category": "Equipment"
 },
 {
-"time": 10.9,
+"time": 10.1,
 "object": "Middle Part Vital Cognitive",
 "category": "Equipment"
 }]"#;
 
+    let config = get_plotly_config(&get_app_config().unwrap());
     let stream: Vec<Value> = from_str(data).unwrap(); // Deserialize once
 
     let window_duration_secs = 10;
     let cursor = Cursor::new(serde_json::to_vec(&stream).unwrap()); // Convert to Cursor
 
     let mut reader = cursor;
+    let ref mut category_map = HashMap::new();
+
     process_visual_attention_data(&mut reader, window_duration_secs)
         .map_err(|e| io::Error::new(io::ErrorKind::Other, e))? // Convert String error to io::Error
         .for_each(|(category, time, ratio)| {
-            println!("Time: {}, Category: {}, Ratio: {}", time, category, ratio);
+            let point = category_map.entry(category.clone()).or_insert_with(||VisualAttentionCategory{
+                x: vec![],
+                y: vec![],
+                name: category,
+                plot_type: "bar".to_owned(),
+                marker: HashMap::new()
+            });
+            point.x.push(time);
+            point.y.push(ratio);
         });
 
+    let mut ordered_categories = Vec::new();
+
+    // println!("{:#?}", category_map);
+    for (category, color) in &config.visual_attention_colors {
+        if let Some(mut category_data) = category_map.remove(category) {
+            category_data.marker.insert("color".to_owned(), color.to_owned());
+            ordered_categories.push(category_data);
+        }
+    }
+    println!("{:#?}", ordered_categories);
+    // match to_string(&ordered_categories) {
+    //     Ok(json) => println!("{:#?}", json),
+    //     Err(e) => eprintln!("Serialization error: {}", e),
+    // }
+
+    // match to_string(&category_map.values().collect::<Vec<_>>()) {
+    //     Ok(json) => println!("{:#?}", json),
+    //     Err(e) => eprintln!("Serialization error: {}", e),
+    // }
 
     Ok(())
+}
+
+
+
+#[derive(Serialize, Deserialize, Debug)]
+struct VisualAttentionCategory {
+    x: Vec<String>,
+    y: Vec<f64>,
+    name: String,
+    #[serde(rename = "type")]
+    plot_type: String,
+    marker: HashMap<String, String> //will only set color
 }

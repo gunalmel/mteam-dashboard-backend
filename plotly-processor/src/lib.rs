@@ -4,9 +4,7 @@ pub mod annotation;
 pub mod font;
 pub mod image;
 pub mod layout;
-pub mod actions_plot_compression_line;
-pub mod actions_plot_data;
-pub mod actions_plot_builders;
-pub mod actions_plot_data_transformers;
-pub mod missed_action_coordinates_calculator;
 pub mod config;
+pub mod actions;
+#[path = "visual-attention/mod.rs"]
+mod visual_attention;

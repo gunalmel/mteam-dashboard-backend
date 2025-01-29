@@ -1,8 +1,9 @@
 use std::{fmt, fs, io, path::Path};
 use std::borrow::ToOwned;
-use serde_json::Error as SerdeError;
+use serde_json::{Error as SerdeError, Value};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use serde::de::Error;
 
 #[derive(Debug)]
 pub enum ConfigError {
@@ -64,7 +65,8 @@ pub struct PlotlyConfig {
     pub stages: StagesConfig,
     pub action_groups: HashMap<String, String>,
     pub action_group_icons: HashMap<String, String>,
-    pub action_plot_settings: ActionsPlotSettings
+    pub action_plot_settings: ActionsPlotSettings,
+    pub visual_attention_colors: Vec<(String, String)>,
 }
 impl PlotlyConfig {
     pub fn get_action_group_name(&self, action_name: &str) -> String{
@@ -84,19 +86,18 @@ impl fmt::Display for ConfigError {
 impl std::error::Error for ConfigError {}
 impl PlotlyConfig {
     pub fn load(config_dir: &Path) -> Result<Self, ConfigError> {
-        let stage_names: StagesConfig =
-            load_json(config_dir.join("action-plot-stages.json"))?;
-        let action_groups: HashMap<String, String> =
-            load_json(config_dir.join("action-groups.json"))?;
-        let action_group_icons: HashMap<String, String> =
-            load_json(config_dir.join("action-group-icons.json"))?;
+        let stage_names: StagesConfig = load_json(config_dir.join("action-plot-stages.json"))?;
+        let action_groups: HashMap<String, String> = load_json(config_dir.join("action-groups.json"))?;
+        let action_group_icons: HashMap<String, String> = load_json(config_dir.join("action-group-icons.json"))?;
         let action_plot_settings: ActionsPlotSettings = load_json(config_dir.join("action-plot-settings.json"))?;
+        let visual_attention_colors: Vec<(String,String)> = load_json_arr_of_tuples(config_dir.join("visual-attention-colors.json"))?;
 
         Ok(PlotlyConfig {
             stages: stage_names,
             action_groups,
             action_group_icons,
-            action_plot_settings
+            action_plot_settings,
+            visual_attention_colors
         })
     }
 }
@@ -109,4 +110,32 @@ fn load_json<T: for<'de> Deserialize<'de>>(path: impl AsRef<Path>) -> Result<T, 
     let content = fs::read_to_string(path.as_ref())?;
     let data = serde_json::from_str(&content)?;
     Ok(data)
+}
+
+fn load_json_arr_of_tuples<T: for<'de> Deserialize<'de>>(path: impl AsRef<Path>) -> Result<Vec<(String, T)>, ConfigError> {
+    let content = fs::read_to_string(path.as_ref()).map_err(ConfigError::Io)?;
+    let data: Value = serde_json::from_str(&content).map_err(ConfigError::Serde)?;
+
+    if let Value::Array(arr) = data {
+        let mut result = Vec::with_capacity(arr.len());
+
+        for item in arr.iter() {
+            if let Value::Array(tuple) = item {
+                if tuple.len() != 2 {
+                    return Err(ConfigError::Serde(serde_json::Error::custom("Expected array of 2 elements")));
+                }
+                let first = tuple.get(0).unwrap();
+                let second = tuple.get(1).unwrap();
+                let key: String = serde_json::from_value(first.clone()).map_err(ConfigError::Serde)?;
+                let value: T = serde_json::from_value(second.clone()).map_err(ConfigError::Serde)?;
+                result.push((key, value));
+            } else {
+                return Err(ConfigError::Serde(serde_json::Error::custom("Expected array of arrays")));
+            }
+        }
+
+        Ok(result)
+    } else {
+        Err(ConfigError::Serde(serde_json::Error::custom("Expected JSON array")))
+    }
 }
