@@ -2,7 +2,7 @@
 resolver = "3"
 members = [
     "action-processor", "cognitive-load-processor",
-    "plotly-processor",
+    "plotly-processor", "visual-attention-processor",
     "web",
 ]
 

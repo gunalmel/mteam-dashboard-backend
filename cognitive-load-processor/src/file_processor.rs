@@ -1,13 +1,13 @@
 use std::io::{BufReader, Read};
 use serde_json::de::Deserializer;
 use serde_json::value::Value;
-use crate::point_parser;
+use crate::point_parser::map_time_to_date;
 
 pub async fn process_cognitive_load_data(reader: &mut dyn Read) -> Result<impl Iterator<Item = (String, Option<f64>)>, String> {
     let root_array = parse_json_root(reader)?;
 
     Ok(root_array.into_iter().scan(None, |state, item| {
-        point_parser::map_time_to_date(item, *state).map(|(date_time, cognitive_load, first_timestamp)| {
+        map_time_to_date(item, *state).map(|(date_time, cognitive_load, first_timestamp)| {
             *state = first_timestamp;
             (date_time, cognitive_load)
         })
