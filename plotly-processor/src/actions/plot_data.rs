@@ -164,7 +164,7 @@ impl<'a> ActionsPlotDataCollector<'a> {
     }
 
     pub fn update_y_coordinates(&mut self) {
-        let max_missed_actions_count_per_stage = self.missed_actions_series.stage_action_counts.values().max().unwrap();
+        let max_missed_actions_count_per_stage = self.missed_actions_series.stage_action_counts.values().max().unwrap_or(&0);
         let missed_actions_y_max = self.plotly_config.action_plot_settings.missed_actions.calculate_y_max(*max_missed_actions_count_per_stage); // TODO: need to work on keeping in sync with y-axis range values
 
         self.layout.yaxis.range.push(missed_actions_y_max.to_string());
@@ -210,7 +210,7 @@ impl<'a> ActionsPlotDataCollector<'a> {
     }
     
     pub fn to_plot_data(mut self) -> ActionsPlotData {
-        self. update_y_coordinates();
+        self.update_y_coordinates();
         self.scatter_data.push(Points(self.actions_series));
         self.scatter_data.push(Points(self.missed_actions_series));
         let action_groups = self.performed_action_groups.into_iter()

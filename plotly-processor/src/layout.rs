@@ -40,7 +40,7 @@ impl Layout{
         },
             shapes: Vec::new(),
             showlegend: false,
-            title: Title { text: "Clinical Review Timeline".to_owned(), y: 0.98 },
+            title: Title { text: "Clinical Review Timeline".to_owned(), y: 0.99 },
             xaxis: XAxis {
             range: Vec::new(),
             title: "Time (seconds)".to_owned(),

@@ -1,6 +1,7 @@
 {
   "amio_or_lidocaine": "Medication",
   "ask about iv access": "Ask About IV Access",
+  "auscultate lungs": "Lung Sounds",
   "bipap_niv_anytime": "bipap_NIV_anytime",
   "check lab tests": "Check Lab Tests",
   "chest_xray": "Order Chest X-ray",
@@ -26,7 +27,9 @@
   "order cooling": "Order Cooling",
   "order ekg": "Order EKG",
   "order intubation": "Order Intubation",
+  "order new labs": "Order new Labs UNAVAILABLE",
   "order new labs unavailable": "Order new Labs UNAVAILABLE",
+  "order needle thoracostomy": "Order Needle Thoracostomy",
   "order pericardiocentesis": "Order Pericardiocentesis",
   "order ultrasound": "Order Ultrasound",
   "order x-ray": "Order Chest X-ray",
