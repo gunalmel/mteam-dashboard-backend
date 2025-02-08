@@ -1,4 +1,4 @@
-use crate::gdrive_provider::data_source::DataSource;
+use crate::data_source::DataSource;
 use crate::gdrive_provider::data_source_name_parser::gdrive_folder_to_location;
 use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
 use crate::gdrive_provider::google_drive_utils::build_drive_query;
@@ -8,6 +8,7 @@ use std::cmp::Ordering;
 use std::error::Error;
 use std::io::Read;
 use std::sync::Arc;
+use async_trait::async_trait;
 
 pub struct GoogleDriveDataSource {
     hub: Arc<dyn DriveHubAdapter + Send + Sync>,
@@ -78,8 +79,9 @@ fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, pri
     }
 }
 
+#[async_trait]
 impl DataSource for GoogleDriveDataSource {
-    async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error>> {
+    async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
         let query = build_drive_query(&self.main_folder_id, "and mimeType = 'application/vnd.google-apps.folder'");
         let folder_list = self.hub.fetch_files(query).await?;
 
@@ -96,11 +98,11 @@ impl DataSource for GoogleDriveDataSource {
 
         Ok(files)
     }
-    async fn fetch_json_reader(&self, file_id: String) -> Result<Box<dyn Read>, String> {
+    async fn fetch_json_reader(&self, file_id: String) -> Result<Box<dyn Read + Send + Sync>, String> {
         let data = self.hub.fetch_file_data(file_id).await?;
         Ok(Box::new(std::io::Cursor::new(data)))
     }
-    async fn fetch_csv_reader(&self, folder_id: String) -> Result<Box<dyn Read>, String> {
+    async fn fetch_csv_reader(&self, folder_id: String) -> Result<Box<dyn Read + Send + Sync>, String> {
         let query = format!(
             "mimeType contains 'text/' and '{}' in parents and trashed = false",
             &folder_id

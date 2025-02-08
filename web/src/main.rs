@@ -1,4 +1,5 @@
 use crate::app_context::AppContext;
+use crate::file_provider::LocalFileDataSource;
 use crate::gdrive_provider::google_data_source::GoogleDriveDataSource;
 use crate::gdrive_provider::google_drive_hub_adapter_builder::GoogleDriveHubAdapterBuilder;
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
@@ -6,9 +7,9 @@ use async_stream::stream;
 use bytes::{Bytes, BytesMut};
 use config::config::AppConfig;
 use config::resolve_file_path::{resolve_config_file_path, resolve_first_path};
+use data_source::DataSource;
 use futures::StreamExt;
 use futures::{stream, Stream};
-use gdrive_provider::data_source::DataSource;
 use log::debug;
 use mteam_dashboard_action_processor::process_csv;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
@@ -25,6 +26,8 @@ use std::{env, io};
 mod app_context;
 mod config;
 mod gdrive_provider;
+mod file_provider;
+pub mod data_source;
 
 async fn data_sources(context: web::Data<AppContext>) -> impl Responder {
     match context.datasource_provider.get_main_folder_list().await {
@@ -51,7 +54,7 @@ async fn plot_sources(
 /**
     * Converts a vector of tuples to a JSON map whose keys are ordered by the order of the tuples in the vector
     * Serde is not helping because under the hood it uses BTreeMap which orders the resulting json maps keys ordered alphabetically.
-    * The other option is to use a dependency such as IndexMap to preserve insert order but it's not worth it for this simple use case. 
+    * The other option is to use a dependency such as IndexMap to preserve insert order but it's not worth it for this simple use case.
     * @param vec: Vec<(String, String)> - The vector of tuples to convert
     * @return String - The ordered JSON string
  */
@@ -199,7 +202,7 @@ async fn main() -> io::Result<()> {
 
     let config = get_app_config().unwrap();
     let plotly_config = get_plotly_config(&config);
-    let datasource_provider = get_datasource_provider(&config).await;
+    let datasource_provider = get_gdrive_datasource_provider(&config).await;
 
     HttpServer::new(move || {
         App::new()
@@ -221,7 +224,10 @@ async fn main() -> io::Result<()> {
         .await
 }
 
-async fn get_datasource_provider(config: &AppConfig) -> Arc<GoogleDriveDataSource> {
+async fn get_local_file_datasource_provider(config: &AppConfig) -> Arc<dyn DataSource> {
+    Arc::new(LocalFileDataSource::new(config.file_system_path.clone()))
+}
+async fn get_gdrive_datasource_provider(config: &AppConfig) -> Arc<dyn DataSource> {
     let gdrive_credentials_file = resolve_first_path(&[
         config.gdrive_credentials_file.as_str(),
         CREDENTIALS_FILE_HOME,

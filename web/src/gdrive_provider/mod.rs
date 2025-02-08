@@ -5,4 +5,3 @@ mod google_drive_hub_adapter;
 mod google_drive_utils;
 pub mod google_drive_hub_adapter_builder;
 pub mod drive_hub_adapter;
-pub mod data_source;

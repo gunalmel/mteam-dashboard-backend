@@ -1,8 +1,8 @@
-use std::sync::Arc;
+use crate::data_source::DataSource;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
-use crate::gdrive_provider::google_data_source::GoogleDriveDataSource;
+use std::sync::Arc;
 
 pub struct AppContext {
-    pub datasource_provider: Arc<GoogleDriveDataSource>,
+    pub datasource_provider: Arc<dyn DataSource>,
     pub plotly_config: &'static PlotlyConfig
 }

@@ -24,6 +24,8 @@ env_logger = "0.11.6"
 bytes = "1.9.0"
 log = "0.4.22"
 async-stream = "0.3.6"
+async-trait = "0.1.85"
+tokio = { version = "1.43.0", features = ["full"] }
 
 [dev-dependencies]
 tempfile = "3.15.0"
