@@ -50,7 +50,7 @@ fn process_action(action: &Action, data_collector: &mut ActionsPlotDataCollector
     group.y_value = data_collector.get_y_for_action_group(&group.group_name);
     data_collector.performed_action_groups.insert(group.group_name.clone(), group.clone());
     let x = action.clone().location.timestamp.date_string;
-    add_action(data_collector, group, x.clone(), format!("{}, {}", x, action.name), action.clone().shock_value, "green".to_owned(), &action.location.stage);
+    add_action(data_collector, group, x.clone(), format!("{}, {}", action.location.timestamp.timestamp, action.name), action.clone().shock_value, "green".to_owned(), &action.location.stage);
 }
 
 fn process_error(action: ErroneousAction, data_collector: &mut ActionsPlotDataCollector) {
@@ -65,7 +65,7 @@ fn process_error(action: ErroneousAction, data_collector: &mut ActionsPlotDataCo
     } else {
         format!(
             "{}, {}, {}",
-            x, action.name, action.error_info.advice
+            action.location.timestamp.timestamp, action.name, action.error_info.advice
         )
     };
     add_action(data_collector, group, x.clone(), hover_text, action.shock_value, "red".to_owned(), &action.location.stage);
