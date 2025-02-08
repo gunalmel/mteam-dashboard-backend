@@ -6,6 +6,6 @@
   "missedActions": {
     "maxCountPerRow" : 3,
     "yIncrement": -3.0,
-    "yMin": -1.0
+    "yMin": -1.25
   }
 }

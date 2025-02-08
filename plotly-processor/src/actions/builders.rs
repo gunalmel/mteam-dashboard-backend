@@ -45,7 +45,7 @@ pub fn create_compression_line(start: PlotLocation, end: PlotLocation, y:String)
         }
     }
 }
-pub fn create_annotation(stage_name: String) -> Annotation {
+pub fn create_stage_annotation(stage_name: String) -> Annotation {
     Annotation {
         text: stage_name,
         xref: "x".to_owned(),
@@ -67,6 +67,30 @@ pub fn create_annotation(stage_name: String) -> Annotation {
         borderpad: 3,
     }
 }
+
+pub fn create_plot_actions_section_annotation(section_name: String, x:String, y: f32, yref: String) -> Annotation{
+    Annotation {
+        text: section_name,
+        xref: "x".to_owned(),
+        yref,
+        x,
+        y,
+        xanchor: "left".to_owned(),
+        yanchor: "middle".to_owned(),
+        showarrow: false,
+        font: Font {
+            size: 14,
+            color: Some("".to_owned()),
+            family: Some("Arial, sans-serif".to_owned()),
+            weight: Some(550),
+        },
+        bgcolor: "".to_string(),
+        bordercolor: "".to_string(),
+        borderwidth: 0,
+        borderpad: 0,
+    }
+}
+
 pub fn create_shape(start: &PlotLocation, end: &PlotLocation) -> Shape {
     Shape {
         x0: start.timestamp.date_string.to_owned(),

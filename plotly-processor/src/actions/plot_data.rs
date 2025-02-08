@@ -1,13 +1,14 @@
+use crate::actions::builders::{create_compression_line, create_plot_actions_section_annotation};
 use crate::actions::compression_line::CompressionLine;
+use crate::actions::missed_action_coordinates_calculator::{seconds_to_date_time_string, MissedActionsCoordinatesIterator, Rectangle};
+use crate::actions::plot_data::ActionsPlotDataItem::{Lines, Points};
 use crate::config::plotly_mappings::PlotlyConfig;
 use crate::font::Font;
 use crate::image::Image;
 use crate::layout::Layout;
-use crate::actions::missed_action_coordinates_calculator::{seconds_to_date_time_string, MissedActionsCoordinatesIterator, Rectangle};
-use crate::actions::builders::create_compression_line;
-use crate::actions::plot_data::ActionsPlotDataItem::{Lines, Points};
 use crate::shape::Shape;
 use mteam_dashboard_action_processor::plot_structures::PlotLocation;
+use mteam_dashboard_utils::date_parser::seconds_to_csv_row_time;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 
@@ -216,6 +217,32 @@ impl<'a> ActionsPlotDataCollector<'a> {
         let action_groups = self.performed_action_groups.into_iter()
             .map(|(key, value)| (key, value.icon))
             .collect();
+
+        let annotation_x = seconds_to_csv_row_time(0).date_string;
+
+        let performed_actions_annotation = create_plot_actions_section_annotation("Performed Actions".to_owned(), annotation_x.clone(), 0.970, "paper".to_owned());
+
+        //     create_stage_annotation("Performed Actions".to_owned());
+        // performed_actions_annotation.x=annotation_x.clone();
+        // performed_actions_annotation.y=0.970;
+        // performed_actions_annotation.borderpad=0;
+        // performed_actions_annotation.borderwidth=0;
+        // performed_actions_annotation.font.size=14;
+        // performed_actions_annotation.font.weight=Some(550);
+
+        let missed_actions_annotation = create_plot_actions_section_annotation("Missed Actions".to_owned(), annotation_x, self.plotly_config.action_plot_settings.missed_actions.y_min+0.3, "y".to_owned());
+
+        //     create_stage_annotation("Missed Actions".to_owned());
+        // missed_actions_annotation.x=annotation_x;
+        // missed_actions_annotation.yref="y".to_owned();
+        // missed_actions_annotation.y=self.plotly_config.action_plot_settings.missed_actions.y_min+0.3;
+        // missed_actions_annotation.borderpad=0;
+        // missed_actions_annotation.borderwidth=0;
+        // missed_actions_annotation.font.size=14;
+        // missed_actions_annotation.font.weight=Some(550);
+
+        self.layout.annotations.push(performed_actions_annotation);
+        self.layout.annotations.push(missed_actions_annotation);
         ActionsPlotData {
             data: self.scatter_data,
             layout: self.layout,

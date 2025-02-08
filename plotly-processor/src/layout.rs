@@ -43,7 +43,7 @@ impl Layout{
             title: Title { text: "Clinical Review Timeline".to_owned(), y: 0.99 },
             xaxis: XAxis {
             range: Vec::new(),
-            title: "Time (seconds)".to_owned(),
+            title: "Time".to_owned(),
             showgrid: false,
             tickformat: "%H:%M:%S".to_owned(),
         },

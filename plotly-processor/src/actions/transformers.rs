@@ -1,6 +1,6 @@
 use crate::config::plotly_mappings::PlotlyConfig;
 use crate::actions::builders::{
-    create_annotation, create_image
+    create_stage_annotation, create_image
     , create_shape,
 };
 use crate::actions::plot_data::{ActionGroup, ActionsPlotData, ActionsPlotDataCollector};
@@ -108,7 +108,7 @@ fn process_stage_period(period: (PlotLocation, PlotLocation), data_collector: &m
     shape_normal.fillcolor=stage_color;
     shape_normal.name=mapped_stage_name.clone();
 
-    let mut annotation = create_annotation(mapped_stage_name.clone());
+    let mut annotation = create_stage_annotation(mapped_stage_name.clone());
     annotation.font.color = Some(annotation_color.clone());
     annotation.bordercolor=annotation_color;
     annotation.x = start.timestamp.date_string;
