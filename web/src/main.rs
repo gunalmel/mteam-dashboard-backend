@@ -38,12 +38,40 @@ async fn plot_sources(
     path: web::Path<(String, String)>,
     context: web::Data<AppContext>,
 ) -> impl Responder {
+    let source_order = &context.plotly_config.team_member_filter_settings.filter_selection_order;
     let (data_source_id, plot_name) = path.into_inner();
-    match context.datasource_provider.fetch_json_file_map(data_source_id.as_str(), plot_name.as_str()).await {
-        Ok(file_name_map) => HttpResponse::Ok().json(file_name_map),
+    match context.datasource_provider.fetch_json_file_map(data_source_id.as_str(), plot_name.as_str(), Some(source_order)).await {
+        Ok(file_name_vec) => {
+            HttpResponse::Ok() .content_type("application/json")
+                .body(convert_vec_to_ordered_json_string(file_name_vec)) }
         Err(e) => HttpResponse::NotFound().json(json!({"Not found": format!("Failed to get file list for the selected data source and plot name: {:#?}", e)}))
     }
 }
+
+/**
+    * Converts a vector of tuples to a JSON map whose keys are ordered by the order of the tuples in the vector
+    * Serde is not helping because under the hood it uses BTreeMap which orders the resulting json maps keys ordered alphabetically.
+    * The other option is to use a dependency such as IndexMap to preserve insert order but it's not worth it for this simple use case. 
+    * @param vec: Vec<(String, String)> - The vector of tuples to convert
+    * @return String - The ordered JSON string
+ */
+fn convert_vec_to_ordered_json_string(vec: Vec<(String, String)>) -> String {
+    let mut json_string = String::from("{");
+    let mut iter = vec.iter();
+
+    if let Some((key, value)) = iter.next() {
+        json_string.push_str(&format!(r#""{}":"{}""#, key, value));
+    }
+
+    for (key, value) in iter {
+        json_string.push_str(&format!(r#", "{}": "{}""#, key, value));
+    }
+
+    json_string.push('}');
+    json_string
+}
+
+
 async fn test_actions(id: web::Path<String>, context: web::Data<AppContext>) -> impl Responder {
     let reader = context
         .datasource_provider

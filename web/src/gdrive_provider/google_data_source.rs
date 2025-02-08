@@ -1,13 +1,13 @@
-use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
-use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
-use std::collections::HashMap;
-use std::error::Error;
-use std::sync::Arc;
-use serde_json::Value;
-use std::io::Read;
-use crate::gdrive_provider::data_source_name_parser::gdrive_folder_to_location;
 use crate::gdrive_provider::data_source::DataSource;
+use crate::gdrive_provider::data_source_name_parser::gdrive_folder_to_location;
+use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
 use crate::gdrive_provider::google_drive_utils::build_drive_query;
+use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
+use serde_json::Value;
+use std::cmp::Ordering;
+use std::error::Error;
+use std::io::Read;
+use std::sync::Arc;
 
 pub struct GoogleDriveDataSource {
     hub: Arc<dyn DriveHubAdapter + Send + Sync>,
@@ -38,14 +38,43 @@ impl GoogleDriveDataSource {
         Ok(subfolder_id.to_string())
     }
 
-    async fn get_json_file_name_map(&self, folder_id: String) -> Result<HashMap<String, String>, String> {
+    async fn get_json_file_name_map(&self, folder_id: String, priority_list_to_order: Option<&Vec<String>>) -> Result<Vec<(String, String)>, String> {
         let query = format!("mimeType = 'application/json' and '{}' in parents and trashed = false", folder_id);
 
         let files = self.hub.fetch_files(query).await?;
-        Ok(files
-            .into_iter()
+
+        let mut file_vec: Vec<(String, String)> = files.into_iter()
             .map(|file| (snake_case_file_to_title_case(file.name.unwrap_or_default().as_str()), file.id.unwrap_or_default()))
-            .collect::<HashMap<String, String>>())
+            .collect();
+
+        if let Some(list) = priority_list_to_order {
+            if list.is_empty() {
+                return Err("Priority list is empty".to_string());
+            }
+
+            let priority_list: Vec<&str> = list.iter().map(|s| s.as_str()).collect();
+
+            // Sort the vector while preserving the priority order
+            file_vec.sort_by(|(a, _), (b, _)| ordering_by_priority_list_then_alphabetically(a, b, &priority_list));
+        }
+
+        // Return Vec instead of BTreeMap to maintain order
+        Ok(file_vec)
+    }
+}
+
+fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
+    if let (Some(idx_a), Some(idx_b)) = (
+        priority_list.iter().position(|x| *x == a),
+        priority_list.iter().position(|x| *x == b)
+    ) {
+        idx_a.cmp(&idx_b)
+    } else if priority_list.contains(&a) {
+        Ordering::Less
+    } else if priority_list.contains(&b) {
+        Ordering::Greater
+    } else {
+        a.cmp(b)
     }
 }
 
@@ -90,8 +119,8 @@ impl DataSource for GoogleDriveDataSource {
         let data = self.hub.fetch_file_data(csv_file_id.to_string()).await?;
         Ok(Box::new(std::io::Cursor::new(data)))
     }
-    async fn fetch_json_file_map(&self, source_folder_id: &str, sub_folder_name: &str) -> Result<HashMap<String, String>, String> {
+    async fn fetch_json_file_map(&self, source_folder_id: &str, sub_folder_name: &str, priority_list_to_order: Option<&Vec<String>>) -> Result<Vec<(String, String)>, String> {
         let folder_id = self.get_subfolder_id(source_folder_id, sub_folder_name).await?;
-        self.get_json_file_name_map(folder_id).await
+        self.get_json_file_name_map(folder_id, priority_list_to_order).await
     }
 }

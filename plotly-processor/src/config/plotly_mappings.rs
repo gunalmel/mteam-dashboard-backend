@@ -66,6 +66,12 @@ pub struct VisualAttentionPlotSettings {
     pub ordered_category_color_tuples: Vec<(String, String)>
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct TeamMemberFilterSettings {
+    #[serde(rename = "filterSelectionOrder")]
+    pub filter_selection_order: Vec<String>,
+}
+
 fn ordered_color_map<'de, D>(deserializer: D) -> Result<Vec<(String, String)>, D::Error>
 where
     D: Deserializer<'de>,
@@ -109,7 +115,8 @@ pub struct PlotlyConfig {
     pub action_groups: HashMap<String, String>,
     pub action_group_icons: HashMap<String, String>,
     pub action_plot_settings: ActionsPlotSettings,
-    pub visual_attention_plot_settings: VisualAttentionPlotSettings
+    pub visual_attention_plot_settings: VisualAttentionPlotSettings,
+    pub team_member_filter_settings: TeamMemberFilterSettings
 }
 impl PlotlyConfig {
     pub fn get_action_group_name(&self, action_name: &str) -> String{
@@ -134,13 +141,15 @@ impl PlotlyConfig {
         let action_group_icons: HashMap<String, String> = load_json(config_dir.join("action-group-icons.json"))?;
         let action_plot_settings: ActionsPlotSettings = load_json(config_dir.join("action-plot-settings.json"))?;
         let visual_attention_plot_settings: VisualAttentionPlotSettings = load_json(config_dir.join("visual-attention-plot-settings.json"))?;
+        let team_member_filter_settings: TeamMemberFilterSettings = load_json(config_dir.join("team-member-filter-settings.json"))?;
 
         Ok(PlotlyConfig {
             stages: stage_names,
             action_groups,
             action_group_icons,
             action_plot_settings,
-            visual_attention_plot_settings
+            visual_attention_plot_settings,
+            team_member_filter_settings
         })
     }
 }
