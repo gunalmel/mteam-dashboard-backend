@@ -7,7 +7,7 @@ use std::future::Future;
 use google_drive3::api::File;
 use hyper::StatusCode;
 use hyper::header::AUTHORIZATION;
-use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
+use crate::data_providers::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
 
 pub struct GoogleDriveHubAdapter {
     hub: Arc<DriveHub<HttpsConnector<HttpConnector>>>,

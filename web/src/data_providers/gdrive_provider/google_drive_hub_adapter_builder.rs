@@ -1,9 +1,9 @@
-use crate::gdrive_provider::google_drive_hub_adapter::GoogleDriveHubAdapter;
-use crate::gdrive_provider::google_drive_utils::{build_connection_client, create_auth_authenticator};
-use crate::gdrive_provider::read_credentials::read_credentials;
 use google_drive3::DriveHub;
 use std::error::Error;
 use std::sync::Arc;
+use crate::data_providers::gdrive_provider::google_drive_hub_adapter::GoogleDriveHubAdapter;
+use crate::data_providers::gdrive_provider::google_drive_utils::{build_connection_client, create_auth_authenticator};
+use crate::data_providers::gdrive_provider::read_credentials::read_credentials;
 
 pub struct GoogleDriveHubAdapterBuilder {
     credentials_path: Option<String>,

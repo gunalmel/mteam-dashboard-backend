@@ -1,7 +1,4 @@
 use crate::data_source::DataSource;
-use crate::gdrive_provider::data_source_name_parser::gdrive_folder_to_location;
-use crate::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
-use crate::gdrive_provider::google_drive_utils::build_drive_query;
 use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
 use serde_json::Value;
 use std::cmp::Ordering;
@@ -10,6 +7,9 @@ use std::io::Read;
 use std::sync::Arc;
 use async_trait::async_trait;
 use crate::config::config::DataSourceType;
+use crate::data_providers::gdrive_provider::data_source_name_parser::folder_to_data_location;
+use crate::data_providers::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
+use crate::data_providers::gdrive_provider::google_drive_utils::build_drive_query;
 
 pub struct GoogleDriveDataSource {
     hub: Arc<dyn DriveHubAdapter + Send + Sync>,
@@ -92,7 +92,7 @@ impl DataSource for GoogleDriveDataSource {
 
         let mut files: Vec<Value> = folder_list
             .into_iter()
-            .filter_map(gdrive_folder_to_location) // Filters and maps files
+            .filter_map(folder_to_data_location) // Filters and maps files
             .collect();
 
         files.sort_by(|a, b| {

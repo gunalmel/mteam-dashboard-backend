@@ -1,4 +1,9 @@
+use crate::config::config::DataSourceType;
+use crate::data_source::DataSource;
 use async_trait::async_trait;
+use chrono::NaiveDate;
+use mteam_dashboard_utils::date_parser;
+use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
 use serde_json::Value;
 use std::cmp::Ordering;
 use std::error::Error;
@@ -7,9 +12,6 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use tokio::task;
 use tokio::task::JoinHandle;
-use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
-use crate::config::config::DataSourceType;
-use crate::data_source::DataSource;
 fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
     if let (Some(idx_a), Some(idx_b)) = (
         priority_list.iter().position(|&x| x == a),
@@ -31,13 +33,13 @@ fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, pri
 ///
 /// ```text
 /// /a/b/topmost_dir/         <-- root_dir
-///    ├── 2025-01-01/         <-- “main folder” (e.g. a date folder)
-///    │      ├── category1/   <-- category folder holding JSON files
+///    ├── 010125/         <-- “main folder” (e.g. a date folder)
+///    │      ├── cognitive-load/   <-- category folder holding JSON files
 ///    │      │      ├── a_file.json
 ///    │      │      └── b_file.json
 ///    │      └── some.csv     <-- CSV (or text) file in the date folder
-///    └── 2025-01-02/
-///           └── category1/
+///    └── 010225/
+///           └── visual-attention/
 ///                  ├── ...
 /// ```
 ///
@@ -86,21 +88,21 @@ impl DataSource for LocalFileDataSource {
                         .unwrap_or("")
                         .to_string();
 
-                    // Use the last modified time as the "epoch" value.
-                    let metadata = fs::metadata(&path)?;
-                    let epoch = metadata
-                        .modified()
-                        .ok()
-                        .and_then(|mtime| {
-                            mtime.duration_since(std::time::UNIX_EPOCH).ok()
-                        })
-                        .map_or(0, |d| d.as_secs());
+                    let date = match date_parser::parse_date(&folder_name) {
+                        Ok(date_result) => date_result,
+                        Err(_) => {
+                            println!("Debug: Folder {} does not seem to be a valid location to process for mteam data files. Skipping.", &folder_name);
+                            NaiveDate::from_ymd_opt(1970, 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap()
+                        }
+                    };
 
                     // Build a JSON object similar to your Google Drive folder mapping.
                     let json_obj = serde_json::json!({
                         "id": folder_name,
                         "name": folder_name,
-                        "date": { "epoch": epoch }
+                        "date": { "epoch": date.and_utc().timestamp(),
+                                  "dateString": date.format("%m/%d/%Y").to_string() 
+                        }
                     });
                     list.push(json_obj);
                 }

@@ -20,9 +20,8 @@ use std::io;
 
 mod app_context;
 mod config;
-mod gdrive_provider;
-mod file_provider;
 pub mod data_source;
+mod data_providers;
 
 async fn data_sources(context: Data<AppContext>) -> impl Responder {
     match context.datasource_provider.get_main_folder_list().await {

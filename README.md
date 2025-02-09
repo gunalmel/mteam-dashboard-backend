@@ -84,3 +84,8 @@ Using file ids, you can get the plot data by (corresponds to airway example in t
 http://localhost:8080/cognitive-load/plotly/1hxfWpUCZGmNVTp8TY7O8WUGQZafhRVVw
 
 http://localhost:8080/visual-attention/plotly/1qC9FflefU_sB6lrts25DgtQuLXJBW3a7
+
+!THE INFO ABOVE IS OUTDATED ABOUT ACCESS URLS, PLEASE CHECK THE CODE FOR THE LATEST INFO!
+
+config.json => dataSourceType: "LocalFile" or "GoogleDrive" as implied by DataSourceType enum forces backend to 
+read data source files either from local file system or Google Drive shared folder. 

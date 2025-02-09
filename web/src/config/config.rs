@@ -6,10 +6,10 @@ use mteam_dashboard_plotly_processor::config::init::init_plot_config;
 use mteam_dashboard_plotly_processor::config::plotly_mappings::PlotlyConfig;
 use crate::config::resolve_file_path::{resolve_config_file_path, resolve_first_path};
 use crate::CREDENTIALS_FILE_HOME;
+use crate::data_providers::file_provider::LocalFileDataSource;
+use crate::data_providers::gdrive_provider::google_data_source::GoogleDriveDataSource;
+use crate::data_providers::gdrive_provider::google_drive_hub_adapter_builder::GoogleDriveHubAdapterBuilder;
 use crate::data_source::DataSource;
-use crate::file_provider::LocalFileDataSource;
-use crate::gdrive_provider::google_data_source::GoogleDriveDataSource;
-use crate::gdrive_provider::google_drive_hub_adapter_builder::GoogleDriveHubAdapterBuilder;
 
 pub enum PlotType{
     CognitiveLoad,
