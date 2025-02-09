@@ -9,6 +9,7 @@ use std::error::Error;
 use std::io::Read;
 use std::sync::Arc;
 use async_trait::async_trait;
+use crate::config::config::DataSourceType;
 
 pub struct GoogleDriveDataSource {
     hub: Arc<dyn DriveHubAdapter + Send + Sync>,
@@ -81,6 +82,10 @@ fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, pri
 
 #[async_trait]
 impl DataSource for GoogleDriveDataSource {
+    fn data_source_type(&self) -> DataSourceType {
+        DataSourceType::GoogleDrive
+    }
+
     async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
         let query = build_drive_query(&self.main_folder_id, "and mimeType = 'application/vnd.google-apps.folder'");
         let folder_list = self.hub.fetch_files(query).await?;

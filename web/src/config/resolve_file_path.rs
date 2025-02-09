@@ -2,7 +2,7 @@ use std::env;
 use std::error::Error;
 use std::path::Path;
 
-fn resolve_command_line_arg(args: &[String]) -> Result<String, Box<dyn Error>> {
+fn resolve_command_line_arg(args: &[String]) -> Result<String, std::io::Error> {
     if let Some(arg) = args.iter().find(|arg| arg.starts_with("--config-file=")) {
         let path = arg.trim_start_matches("--config-file=");
         if !path.is_empty() {
@@ -15,13 +15,13 @@ fn resolve_command_line_arg(args: &[String]) -> Result<String, Box<dyn Error>> {
             });
         }
     }
-    Err(Box::new(std::io::Error::new(
+    Err(std::io::Error::new(
         std::io::ErrorKind::NotFound,
         "No \"--config-file\" argument provided or path is empty",
-    )))
+    ))
 }
 
-fn resolve_environment_var() -> Result<String, Box<dyn Error>> {
+fn resolve_environment_var() -> Result<String, std::io::Error> {
     if let Ok(env_path) = env::var("MTEAM_DASHBOARD_BACKEND_CONFIG") {
         return resolve_path(&env_path).map_err(|_| {
             std::io::Error::new(
@@ -34,10 +34,10 @@ fn resolve_environment_var() -> Result<String, Box<dyn Error>> {
                 .into()
         });
     }
-    Err(Box::new(std::io::Error::new(
+    Err(std::io::Error::new(
         std::io::ErrorKind::NotFound,
         "Environment variable MTEAM_DASHBOARD_BACKEND_CONFIG is not set",
-    )))
+    ))
 }
 
 pub fn resolve_path(path_string: &str) -> Result<String, Box<dyn Error>> {
@@ -66,19 +66,19 @@ pub fn resolve_path(path_string: &str) -> Result<String, Box<dyn Error>> {
     Ok(resolved_path.to_string_lossy().into_owned())
 }
 
-pub fn resolve_first_path(paths: &[&str]) -> Result<String, Box<dyn Error>> {
+pub fn resolve_first_path(paths: &[&str]) -> Result<String, std::io::Error> {
     for &path in paths {
         if let Ok(resolved) = resolve_path(path) {
             return Ok(resolved);
         }
     }
-    Err(Box::new(std::io::Error::new(
+    Err(std::io::Error::new(
         std::io::ErrorKind::NotFound,
         format!("No valid path found: {:#?}", paths)
-    )))
+    ))
 }
 
-pub fn resolve_config_file_path(cmd_args: &[String], fallback_paths: &[&str]) -> Result<String, Box<dyn Error>> {
+pub fn resolve_config_file_path(cmd_args: &[String], fallback_paths: &[&str]) -> Result<String, std::io::Error> {
     resolve_command_line_arg(cmd_args)
         .or_else(|_| resolve_environment_var())
         .or_else(|_| resolve_first_path(fallback_paths))

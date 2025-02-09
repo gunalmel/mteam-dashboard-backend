@@ -6,7 +6,9 @@ use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use tokio::task;
+use tokio::task::JoinHandle;
 use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
+use crate::config::config::DataSourceType;
 use crate::data_source::DataSource;
 fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
     if let (Some(idx_a), Some(idx_b)) = (
@@ -50,15 +52,28 @@ impl LocalFileDataSource {
             root_dir: root_dir.as_ref().to_path_buf(),
         }
     }
+
+    fn get_file_reader(file_path: PathBuf) -> JoinHandle<Result<Box<dyn Read + Send + Sync>, String>> {
+        let reader = task::spawn_blocking(|| {
+            fs::File::open(file_path)
+                .map(|f| Box::new(f) as Box<dyn Read + Send + Sync>)
+                .map_err(|e| e.to_string())
+        });
+        reader
+    }
 }
 
 #[async_trait]
 impl DataSource for LocalFileDataSource {
+    fn data_source_type(&self) -> DataSourceType {
+        DataSourceType::LocalFile
+    }
+
     async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
         // Clone the root directory so we can move it into the blocking closure.
         let root_dir = self.root_dir.clone();
         // Use block_in_place to run the blocking code on the current thread.
-        let folders = task::block_in_place(|| -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
+        let folders = task::spawn_blocking(|| -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
             let mut list = Vec::new();
             for entry in fs::read_dir(root_dir)? {
                 let entry = entry?;
@@ -98,22 +113,18 @@ impl DataSource for LocalFileDataSource {
             });
             Ok(list)
         });
-        folders
+        folders.await.unwrap()
     }
 
     async fn fetch_json_reader(&self, file_id: String) -> Result<Box<dyn Read + Send + Sync>, String> {
         let file_path = self.root_dir.join(file_id);
-        let reader = task::block_in_place(|| {
-            fs::File::open(file_path)
-                .map(|f| Box::new(f) as Box<dyn Read + Send + Sync>)
-                .map_err(|e| e.to_string())
-        });
-        reader
+        let reader = Self::get_file_reader(file_path);
+        reader.await.unwrap()
     }
 
     async fn fetch_csv_reader(&self, date_folder_id: String) -> Result<Box<dyn Read + Send + Sync>, String> {
         let folder_path = self.root_dir.join(date_folder_id);
-        let csv_file_path = task::block_in_place(|| {
+        let csv_file_path = task::spawn_blocking(move || {
             let mut csv_path: Option<PathBuf> = None;
             for entry in fs::read_dir(&folder_path).map_err(|e| e.to_string())? {
                 let entry = entry.map_err(|e| e.to_string())?;
@@ -128,24 +139,21 @@ impl DataSource for LocalFileDataSource {
                 }
             }
             csv_path.ok_or_else(|| format!("No CSV file found in folder {:?}", folder_path))
-        })?;
-        let reader = task::block_in_place(|| {
-            fs::File::open(csv_file_path)
-                .map(|f| Box::new(f) as Box<dyn Read + Send + Sync>)
-                .map_err(|e| e.to_string())
-        });
-        reader
+        }).await.unwrap()?;
+        let reader = Self::get_file_reader(csv_file_path); 
+        
+        reader.await.unwrap()
     }
 
     async fn fetch_json_file_map(&self, date_folder_id: &str, category_folder_name: &str, priority_list_to_order: Option<&Vec<String>>, ) -> Result<Vec<(String, String)>, String> {
         // Convert borrowed parameters to owned values so they can be used in the closure.
-        let date_folder_id = date_folder_id.to_string();
-        let category_folder_name = category_folder_name.to_string();
+        let date_folder_id = date_folder_id.to_owned();
+        let category_folder_name = category_folder_name.to_owned();
         let root_dir = self.root_dir.clone();
         // Clone the priority list if provided.
         let priority_list = priority_list_to_order.cloned();
 
-        let file_map = task::block_in_place(|| -> Result<Vec<(String, String)>, String> {
+        let file_map = task::spawn_blocking(move || -> Result<Vec<(String, String)>, String> {
             let folder_path = root_dir.join(&date_folder_id).join(&category_folder_name);
             let mut file_vec = Vec::new();
             for entry in fs::read_dir(&folder_path).map_err(|e| e.to_string())? {
@@ -176,6 +184,6 @@ impl DataSource for LocalFileDataSource {
             }
             Ok(file_vec)
         });
-        file_map
+        file_map.await.unwrap()
     }
 }

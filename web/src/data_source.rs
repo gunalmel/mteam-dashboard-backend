@@ -2,9 +2,11 @@ use serde_json::Value;
 use std::error::Error;
 use std::io::Read;
 use async_trait::async_trait;
+use crate::config::config::DataSourceType;
 
 #[async_trait]
 pub trait DataSource: Send + Sync + 'static {
+    fn data_source_type(&self) -> DataSourceType;
     async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error + Send + Sync>>;
     async fn fetch_json_reader(&self, file_id: String) -> Result<Box<dyn Read + Send + Sync>, String>;
     async fn fetch_csv_reader(&self, date_folder_id: String) -> Result<Box<dyn Read + Send + Sync>, String>;

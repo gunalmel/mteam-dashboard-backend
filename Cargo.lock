@@ -1651,7 +1651,6 @@ dependencies = [
  "mteam-dashboard-cognitive-load-processor",
  "mteam-dashboard-plotly-processor",
  "mteam-dashboard-utils",
- "mteam-dashboard-visual-attention-processor",
  "reqwest",
  "rustls",
  "serde",

@@ -1,6 +1,7 @@
 {
+  "plotConfigPath": "plot-config",
   "gdriveCredentialsFile": "/Users/gunalmel/Downloads/mteam-dashboard-447216-1c302dc9fdba.json",
   "gdriveRootFolderId": "18EMFByL-RimxgejYDR7cSS8FXUnBGXS7",
-  "plotConfigPath": "plot-config",
-  "fileSystemPath": "/Users/gunalmel//Downloads/mteam-dashboard-data"
+  "fileSystemPath": "/Users/gunalmel/Downloads/mteam-dashboard-data",
+  "dataSourceType": "GoogleDrive"
 }
