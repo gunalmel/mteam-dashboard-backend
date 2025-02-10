@@ -1,7 +1,8 @@
 use crate::app_context::AppContext;
 use crate::config::config::{DataSourceType, PlotType};
+use actix_files as fs;
 use actix_web::web::{Data, Path};
-use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{guard, middleware, web, App, HttpResponse, HttpServer, Responder};
 use async_stream::stream;
 use bytes::{Bytes, BytesMut};
 use config::config::AppConfig;
@@ -119,7 +120,10 @@ async fn actions(data_source_id: Path<String>, context: Data<AppContext>) -> imp
     }
 }
 async fn cognitive_load(path: Path<(String, String)>, context: Data<AppContext>) -> impl Responder {
-    let mut file_reader = get_json_file_reader(PlotType::CognitiveLoad, path, &context.datasource_provider).await;
+    let mut file_reader = match get_json_file_reader(PlotType::CognitiveLoad, path, &context.datasource_provider).await{
+        Ok(r) => r,
+        Err(e) => return HttpResponse::NotFound().json(json!({"error": "Failed to get cognitive load data", "details": e})),
+    };
     match process_cognitive_load_data(&mut *file_reader).await {
         Ok(iterator) => {
             let stream = stream! { // Start the JSON object
@@ -157,7 +161,7 @@ async fn cognitive_load(path: Path<(String, String)>, context: Data<AppContext>)
     }
 }
 
-async fn get_json_file_reader(plot_type: PlotType, path: Path<(String, String)>, datasource_provider: &Arc<dyn DataSource>) -> Box<dyn Read + Send + Sync> {
+async fn get_json_file_reader(plot_type: PlotType, path: Path<(String, String)>, datasource_provider: &Arc<dyn DataSource>) -> Result<Box<dyn Read + Send + Sync>, String> {
     let (data_source_id, id) = path.into_inner();
     let json_file_id = match datasource_provider.data_source_type() {
         DataSourceType::LocalFile => format!("{}/{}/{}",data_source_id,plot_type.as_str(),id),
@@ -168,11 +172,13 @@ async fn get_json_file_reader(plot_type: PlotType, path: Path<(String, String)>,
         .fetch_json_reader(json_file_id)
         .await
         .map_err(|e| e.to_string())
-        .unwrap()
 }
 
 async fn visual_attention(path: Path<(String, String)>, context: Data<AppContext>) -> impl Responder{
-    let mut file_reader = get_json_file_reader(PlotType::VisualAttention, path, &context.datasource_provider).await;
+    let mut file_reader = match get_json_file_reader(PlotType::VisualAttention, path, &context.datasource_provider).await{
+        Ok(r) => r,
+        Err(e) => return HttpResponse::NotFound().json(json!({"error": "Failed to get visual attention data", "details": e})),
+    };
     let window_duration_secs = context.plotly_config.visual_attention_plot_settings.window_size_secs;
 
     let visual_attention_plot_data = visual_attention::transformers::to_plotly_data(&mut file_reader, window_duration_secs, &context.plotly_config);
@@ -185,10 +191,6 @@ async fn visual_attention(path: Path<(String, String)>, context: Data<AppContext
     }
 }
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hi from mteam-dashboard")
-}
 const CREDENTIALS_FILE_HOME: &str =
     "/Users/gunalmel/Downloads/mteam-dashboard-447216-9836ce4f74a2.json";
 
@@ -199,23 +201,29 @@ async fn main() -> io::Result<()> {
     let config = AppConfig::new("config.json")?;
     let plotly_config = config.get_plotly_config();
     let datasource_provider = config.get_data_provider().await;
-
+    let context = Data::new(AppContext {
+        datasource_provider: datasource_provider.clone(),
+        plotly_config
+    });
     HttpServer::new(move || {
         App::new()
+            .service(
+                fs::Files::new("/", &config.static_files_path)
+                    .index_file("index.html")
+                    .guard(guard::fn_guard(|ctx| !ctx.head().uri.path().starts_with("/api")))
+            )
+            .service(web::scope("/api")
             .wrap(middleware::Compress::default())
-            .app_data(Data::new(AppContext {
-                datasource_provider: datasource_provider.clone(),
-                plotly_config
-            }))
-            .service(hello)
+            .app_data(context.clone()) //To achieve globally shared state, it must be created outside of the closure passed to HttpServer::new and moved/cloned in.
             .route("/data-sources", web::get().to(data_sources))
             .route("/data-sources/{data_source_id}/actions", web::get().to(actions))
             .route("/data-sources/{data_source_id}/actions/raw/", web::get().to(test_actions))
             .route("/data-sources/{data_source_id}/{plot_name}", web::get().to(plot_sources))
             .route("/data-sources/{data_source_id}/cognitive-load/{id}", web::get().to(cognitive_load))
             .route("/data-sources/{data_source_id}/visual-attention/{id}", web::get().to(visual_attention))
-    })
-        .bind(("0.0.0.0", 8080))?
+                
+        )})
+        .bind(("0.0.0.0", config.port))?
         .run()
         .await
 }

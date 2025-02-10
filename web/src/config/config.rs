@@ -42,7 +42,10 @@ pub struct AppConfig {
     #[serde(rename = "fileSystemPath")]
     pub file_system_path: String,
     #[serde(rename = "dataSourceType")]
-    pub data_source_type: DataSourceType
+    pub data_source_type: DataSourceType,
+    pub port: u16,
+    #[serde(rename = "staticFilesPath")]
+    pub static_files_path: String
 }
 
 impl AppConfig {
