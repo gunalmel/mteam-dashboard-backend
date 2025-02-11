@@ -4,8 +4,12 @@ use serde_json::Value;
 use std::cmp::Ordering;
 use std::error::Error;
 use std::io::Read;
+use std::pin::Pin;
 use std::sync::Arc;
 use async_trait::async_trait;
+use bytes::Bytes;
+use futures::{Stream, StreamExt, TryStreamExt};
+use reqwest::Client;
 use crate::config::config::DataSourceType;
 use crate::data_providers::gdrive_provider::data_source_name_parser::folder_to_data_location;
 use crate::data_providers::gdrive_provider::drive_hub_adapter::DriveHubAdapter;
@@ -63,6 +67,81 @@ impl GoogleDriveDataSource {
         // Return Vec instead of BTreeMap to maintain order
         Ok(file_vec)
     }
+
+    pub async fn stream_video(
+        &self,
+        folder_id: String,
+        range: Option<String>,
+    ) -> Result<
+        (
+            u16,                          // status code
+            String,                       // content type
+            Option<u64>,                  // content length
+            Option<String>,               // content-range header
+            Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>
+        ),
+        String
+    > {
+        // 1. Build a query for video files in the target folder.
+        let query = format!(
+            "mimeType contains 'video/' and '{}' in parents and trashed = false",
+            folder_id
+        );
+        let video_files = self.hub.fetch_files(query).await?;
+        if video_files.is_empty() {
+            return Err(format!("No video files found under folder: {}", folder_id));
+        }
+        // For simplicity, take the first video file.
+        let video_file_id = video_files
+            .get(0)
+            .and_then(|file| file.id.as_ref())
+            .ok_or_else(|| "Video file ID not found".to_string())?;
+
+        // 2. Get an access token from the hub.
+        let access_token = self.hub.get_access_token().await?;
+
+        // 3. Build the download URL using the Drive API endpoint.
+        let url = format!(
+            "https://www.googleapis.com/drive/v3/files/{}?alt=media",
+            video_file_id
+        );
+
+        // 4. Create a reqwest client and prepare the GET request.
+        let client = Client::new();
+        let mut req_builder = client.get(&url).bearer_auth(access_token);
+        if let Some(range_header) = range {
+            req_builder = req_builder.header("Range", range_header);
+        }
+        let response = req_builder.send().await.map_err(|e| e.to_string())?;
+
+        // 5. Capture the upstream response status code.
+        let status_code = response.status().as_u16();
+
+        // 6. Extract Content-Type, Content-Length, and Content-Range from the response headers.
+        let content_type = response.headers()
+            .get("Content-Type")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("application/octet-stream")
+            .to_string();
+
+        let content_length = response.headers()
+            .get("Content-Length")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|s| s.parse::<u64>().ok());
+
+        let content_range = response.headers()
+            .get("Content-Range")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_string());
+
+        // 7. Obtain the streaming response body.
+        let stream = response
+            .bytes_stream()
+            .map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)
+            .boxed();
+
+        Ok((status_code, content_type, content_length, content_range, stream))
+    }
 }
 
 fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
@@ -85,7 +164,6 @@ impl DataSource for GoogleDriveDataSource {
     fn data_source_type(&self) -> DataSourceType {
         DataSourceType::GoogleDrive
     }
-
     async fn get_main_folder_list(&self) -> Result<Vec<Value>, Box<dyn Error + Send + Sync>> {
         let query = build_drive_query(&self.main_folder_id, "and mimeType = 'application/vnd.google-apps.folder'");
         let folder_list = self.hub.fetch_files(query).await?;
@@ -129,5 +207,22 @@ impl DataSource for GoogleDriveDataSource {
     async fn fetch_json_file_map(&self, source_folder_id: &str, sub_folder_name: &str, priority_list_to_order: Option<&Vec<String>>) -> Result<Vec<(String, String)>, String> {
         let folder_id = self.get_subfolder_id(source_folder_id, sub_folder_name).await?;
         self.get_json_file_name_map(folder_id, priority_list_to_order).await
+    }
+
+    async fn stream_video(
+        &self,
+        folder_id: String,
+        range: Option<String>,
+    ) -> Result<
+        (
+            u16,
+            String,
+            Option<u64>,
+            Option<String>,
+            Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>
+        ),
+        String
+    > {
+        self.stream_video(folder_id, range).await
     }
 }

@@ -68,4 +68,19 @@ impl DriveHubAdapter for GoogleDriveHubAdapter {
             }
         })
     }
+
+    fn get_access_token(&self) -> Pin<Box<dyn Future<Output = Result<String, String>> + Send + '_>> {
+        let hub = Arc::clone(&self.hub);
+        let scope = self.scope.clone();
+        Box::pin(async move {
+            // Request a token for the given scope.
+            let token_option = hub
+                .auth
+                .get_token(&[&scope])
+                .await
+                .map_err(|e| format!("Token error: {}", e))?;
+            let token = token_option.ok_or_else(|| "Missing access token".to_string())?;
+            Ok(token)
+        })
+    }
 }

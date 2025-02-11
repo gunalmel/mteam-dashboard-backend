@@ -2,27 +2,61 @@ use crate::app_context::AppContext;
 use crate::config::config::{DataSourceType, PlotType};
 use actix_files as fs;
 use actix_web::web::{Data, Path};
-use actix_web::{guard, middleware, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use async_stream::stream;
 use bytes::{Bytes, BytesMut};
 use config::config::AppConfig;
 use data_source::DataSource;
-use futures::StreamExt;
+use futures::{StreamExt, TryStreamExt};
 use futures::{stream, Stream};
 use mteam_dashboard_action_processor::process_csv;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
 use mteam_dashboard_plotly_processor::actions::plot_data::ActionsPlotData;
 use mteam_dashboard_plotly_processor::{actions, visual_attention};
+use serde::Deserialize;
 use serde_json::{json, to_string};
+use std::error::Error;
+use std::io;
 use std::io::Read;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::io;
 
 mod app_context;
 mod config;
 pub mod data_source;
 mod data_providers;
+
+#[derive(Deserialize)]
+struct RangeQuery {
+    range: Option<String>,
+}
+async fn stream_video_handler(
+    path: Path<String>,
+    query: web::Query<RangeQuery>,
+    data: Data<AppContext>,
+) -> Result<HttpResponse, Box<dyn Error>> {
+    let folder_id = path.into_inner();
+    let range = query.range.clone();
+
+    let (status_code, content_type, content_length, content_range, stream) = data
+        .datasource_provider
+        .stream_video(folder_id, range)
+        .await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+
+    let mut response = HttpResponse::build(actix_web::http::StatusCode::from_u16(status_code).unwrap());
+    response.content_type(content_type);
+    response.insert_header(("Accept-Ranges", "bytes"));
+    response.insert_header(("Access-Control-Allow-Origin", "*"));
+    if let Some(len) = content_length {
+        response.insert_header(("Content-Length", len.to_string()));
+    }
+    if let Some(cr) = content_range {
+        response.insert_header(("Content-Range", cr));
+    }
+
+    Ok(response.streaming(stream.map_err(|e| actix_web::error::ErrorInternalServerError(e))))
+}
 
 async fn data_sources(context: Data<AppContext>) -> impl Responder {
     match context.datasource_provider.get_main_folder_list().await {
@@ -160,7 +194,6 @@ async fn cognitive_load(path: Path<(String, String)>, context: Data<AppContext>)
             .json(json!({"error": "Failed to process cognitive load data", "details": err})),
     }
 }
-
 async fn get_json_file_reader(plot_type: PlotType, path: Path<(String, String)>, datasource_provider: &Arc<dyn DataSource>) -> Result<Box<dyn Read + Send + Sync>, String> {
     let (data_source_id, id) = path.into_inner();
     let json_file_id = match datasource_provider.data_source_type() {
@@ -214,7 +247,8 @@ async fn main() -> io::Result<()> {
             )
             .service(web::scope("/api")
             .wrap(middleware::Compress::default())
-            .app_data(context.clone()) //To achieve globally shared state, it must be created outside of the closure passed to HttpServer::new and moved/cloned in.
+            .app_data(context.clone()) //To achieve globally shared state, it must be created outside of the closure passed to HttpServer::new and moved/cloned in. 
+            .route("/data-sources/{data_source_id}/video", web::get().to(stream_video_handler))
             .route("/data-sources", web::get().to(data_sources))
             .route("/data-sources/{data_source_id}/actions", web::get().to(actions))
             .route("/data-sources/{data_source_id}/actions/raw/", web::get().to(test_actions))

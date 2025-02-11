@@ -10,6 +10,9 @@ use std::error::Error;
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
+use bytes::Bytes;
+use futures::Stream;
 use tokio::task;
 use tokio::task::JoinHandle;
 fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
@@ -187,5 +190,9 @@ impl DataSource for LocalFileDataSource {
             Ok(file_vec)
         });
         file_map.await.unwrap()
+    }
+
+    async fn stream_video(&self, folder_id: String, range: Option<String>) -> Result<(u16, String, Option<u64>, Option<String>, Pin<Box<dyn Stream<Item=Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>), String> {
+        todo!()
     }
 }
