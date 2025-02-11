@@ -3,7 +3,7 @@ use crate::config::config::{DataSourceType, PlotType};
 use actix_files as fs;
 use actix_web::error::ErrorInternalServerError;
 use actix_web::web::{Data, Path};
-use actix_web::{guard, middleware, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{guard, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use async_stream::stream;
 use bytes::{Bytes, BytesMut};
 use config::config::AppConfig;
@@ -14,7 +14,6 @@ use mteam_dashboard_action_processor::process_csv;
 use mteam_dashboard_cognitive_load_processor::file_processor::process_cognitive_load_data;
 use mteam_dashboard_plotly_processor::actions::plot_data::ActionsPlotData;
 use mteam_dashboard_plotly_processor::{actions, visual_attention};
-use serde::Deserialize;
 use serde_json::{json, to_string};
 use std::error::Error;
 use std::io;
@@ -27,35 +26,38 @@ mod config;
 pub mod data_source;
 mod data_providers;
 
-#[derive(Deserialize)]
-struct RangeQuery {
-    range: Option<String>,
-}
+
 async fn stream_video_handler(
+    req: HttpRequest,
     path: Path<String>,
-    query: web::Query<RangeQuery>,
     data: Data<AppContext>,
 ) -> Result<HttpResponse, Box<dyn Error>> {
     let folder_id = path.into_inner();
-    let range = query.range.clone();
+    // Extract the "Range" header from the request headers.
+    let range = req.headers()
+        .get("Range")
+        .and_then(|h| h.to_str().ok())
+        .map(String::from);
 
+    // Call the stream_video method.
     let result = data.datasource_provider.stream_video(folder_id, range).await;
-
-    if let Err(e) = result {
-        return if e.contains("No video file found") {
-            Ok(HttpResponse::NotFound().body(e))
-        } else {
-            Err(ErrorInternalServerError(e).into())
+    // If an error occurs, check if it's because no video file was found and return 400, otherwise 500.
+    let (status_code, content_type, content_length, content_range, stream) = match result {
+        Ok(t) => t,
+        Err(e) => {
+            return if e.contains("No video file found") {
+                Ok(HttpResponse::BadRequest().body(e))
+            } else {
+                Err(ErrorInternalServerError(e).into())
+            }
         }
-    }
+    };
 
-    let (status_code, content_type, content_length, content_range, stream) = result?;
-
-    let mut response = HttpResponse::build(
-        actix_web::http::StatusCode::from_u16(status_code).unwrap()
-    );
+    // Build the response using the returned status code and headers.
+    let mut response = HttpResponse::build(actix_web::http::StatusCode::from_u16(status_code).unwrap());
     response.content_type(content_type);
     response.insert_header(("Accept-Ranges", "bytes"));
+    response.insert_header(("Access-Control-Allow-Origin", "*"));
     if let Some(len) = content_length {
         response.insert_header(("Content-Length", len.to_string()));
     }
@@ -254,15 +256,15 @@ async fn main() -> io::Result<()> {
             )
             .service(web::scope("/api")
             .wrap(middleware::Compress::default())
-            .app_data(context.clone()) //To achieve globally shared state, it must be created outside of the closure passed to HttpServer::new and moved/cloned in. 
+            .app_data(context.clone()) //To achieve globally shared state, it must be created outside the closure passed to HttpServer::new and moved/cloned in.
             .route("/data-sources/{data_source_id}/video", web::get().to(stream_video_handler))
             .route("/data-sources", web::get().to(data_sources))
             .route("/data-sources/{data_source_id}/actions", web::get().to(actions))
-            .route("/data-sources/{data_source_id}/actions/raw/", web::get().to(test_actions))
+            .route("/data-sources/{data_source_id}/actions/raw", web::get().to(test_actions))
             .route("/data-sources/{data_source_id}/{plot_name}", web::get().to(plot_sources))
             .route("/data-sources/{data_source_id}/cognitive-load/{id}", web::get().to(cognitive_load))
             .route("/data-sources/{data_source_id}/visual-attention/{id}", web::get().to(visual_attention))
-                
+
         )})
         .bind(("0.0.0.0", config.port))?
         .run()

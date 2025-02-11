@@ -3,7 +3,7 @@
   "gdriveCredentialsFile": "/Users/gunalmel/Downloads/mteam-dashboard-447216-1c302dc9fdba.json",
   "gdriveRootFolderId": "18EMFByL-RimxgejYDR7cSS8FXUnBGXS7",
   "fileSystemPath": "/Users/gunalmel/Downloads/mteam-dashboard-data",
-  "dataSourceType": "LocalFile",
+  "dataSourceType": "GoogleDrive",
   "port": 8080,
   "staticFilesPath": "/Users/gunalmel/development/personal/mteam-dashboard/mteam-dashboard/front-end/dist"
 }

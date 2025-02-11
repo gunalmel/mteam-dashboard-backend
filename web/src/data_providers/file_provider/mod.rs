@@ -1,9 +1,10 @@
-use tokio::io::AsyncReadExt;
-use futures::StreamExt;
 use crate::config::config::DataSourceType;
 use crate::data_source::DataSource;
 use async_trait::async_trait;
+use bytes::Bytes;
 use chrono::NaiveDate;
+use futures::Stream;
+use futures::StreamExt;
 use mteam_dashboard_utils::date_parser;
 use mteam_dashboard_utils::strings::snake_case_file_to_title_case;
 use serde_json::Value;
@@ -13,8 +14,8 @@ use std::fs;
 use std::io::{Read, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
-use bytes::Bytes;
-use futures::Stream;
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
 use tokio::io::AsyncSeekExt;
 use tokio::task;
 use tokio::task::JoinHandle;
@@ -198,8 +199,8 @@ impl DataSource for LocalFileDataSource {
 
     async fn stream_video(&self, folder_id: String, range: Option<String>) -> Result<
         (
-            u16,    // HTTP status code
-            String, // content type
+            u16,    // HTTP status code (206 if a Range header was provided, otherwise 200)
+            String, // content type (we assume "video/mp4")
             Option<u64>,  // content length (number of bytes being sent)
             Option<String>, // Content-Range header value if applicable
             Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>
@@ -208,49 +209,45 @@ impl DataSource for LocalFileDataSource {
     > {
         // 1. Compute the folder path.
         let dir_path = self.root_dir.join(&folder_id);
-        // 2. Search for the first video file (assuming extension "mp4").
-        let mut video_file_path: Option<PathBuf> = None;
-        for entry in std::fs::read_dir(&dir_path).map_err(|e| e.to_string())? {
-            let entry = entry.map_err(|e| e.to_string())?;
-            let path = entry.path();
-            if path.is_file() {
-                if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
-                    match ext.to_ascii_lowercase().as_str() {
-                        "mp4" | "webm" | "ogg" | "mov"=> {
-                            video_file_path = Some(path);
-                            break;
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        }
-        let video_path = video_file_path.ok_or_else(|| format!("No video file found in folder {:?}", dir_path))?;
+
+        // 2. Search for the first video file (looking for common video extensions).
+        let video_file_path = fs::read_dir(&dir_path)
+            .map_err(|e| format!("Error reading directory {:?}: {}", dir_path, e))?
+            .filter_map(|entry| entry.ok().map(|e| e.path()))
+            .find(|path| {
+                path.is_file() &&
+                    path.extension()
+                        .and_then(|s| s.to_str())
+                        .map(|ext| matches!(ext.to_ascii_lowercase().as_str(), "mp4" | "webm" | "ogg" | "mov"))
+                        .unwrap_or(false)
+            })
+            .ok_or_else(|| format!("No video file found in folder {:?}", dir_path))?;
 
         // 3. Open the video file asynchronously.
-        let file = tokio::fs::File::open(&video_path)
+        let file = File::open(&video_file_path)
             .await
-            .map_err(|e| format!("Error opening video file: {}", e))?;
+            .map_err(|e| format!("Error opening video file {:?}: {}", video_file_path, e))?;
         let metadata = file.metadata()
             .await
-            .map_err(|e| format!("Error getting metadata: {}", e))?;
+            .map_err(|e| format!("Error getting metadata for {:?}: {}", video_file_path, e))?;
         let total_length = metadata.len();
 
-        // For simplicity, assume the MIME type is "video/mp4".
+        // Assume the MIME type is "video/mp4" (adjust if needed).
         let content_type = "video/mp4".to_string();
 
         // 4. If a Range header is provided, parse it.
         if let Some(range_header) = range {
-            // Expecting header like "bytes=START-END"
             if !range_header.starts_with("bytes=") {
                 return Err("Invalid range header".to_string());
             }
-            let range_part = &range_header[6..]; // skip "bytes="
+            let range_part = &range_header[6..]; // Remove the "bytes=" prefix.
             let parts: Vec<&str> = range_part.split('-').collect();
+
+            // Parse the start offset (default to 0 if missing or unparsable).
             let start: u64 = parts.get(0)
                 .and_then(|s| s.parse().ok())
-                .unwrap_or(0); // Fix: Default to 0 if start is missing
-
+                .unwrap_or(0);
+            // Parse the end offset; if missing or empty, default to total_length - 1.
             let end: u64 = if let Some(end_str) = parts.get(1) {
                 if end_str.is_empty() {
                     total_length - 1
@@ -265,42 +262,29 @@ impl DataSource for LocalFileDataSource {
                 return Err("Invalid range values".to_string());
             }
 
-            let mut file = tokio::fs::File::open(&video_path)
+            // Re-open the file (or simply seek the already-open file) for reading the requested range.
+            let mut file = File::open(&video_file_path)
                 .await
                 .map_err(|e| format!("Error reopening video file: {}", e))?;
             file.seek(SeekFrom::Start(start))
                 .await
                 .map_err(|e| format!("Error seeking in file: {}", e))?;
-
             let byte_count = end - start + 1;
+
+            // Wrap the file (with a take adaptor) in a ReaderStream.
             let stream = ReaderStream::new(tokio::io::BufReader::new(file.take(byte_count)));
-            let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
+            let boxed_stream: Pin<Box<dyn Stream<Item=Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
                 Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
 
+            // Build the Content-Range header.
             let content_range = format!("bytes {}-{}/{}", start, end, total_length);
-            return Ok((206, content_type, Some(byte_count), Some(content_range), boxed_stream)); // ✅ Always return 206
-        }
-
-        if range.is_some() {
-            let content_range = format!("bytes 0-{}/{}", total_length - 1, total_length);
-            let file = tokio::fs::File::open(&video_path)
-                .await
-                .map_err(|e| format!("Error opening video file: {}", e))?;
+            Ok((206, content_type, Some(byte_count), Some(content_range), boxed_stream))
+        } else {
+            // 5. No Range header provided: stream the entire file.
             let stream = ReaderStream::new(tokio::io::BufReader::new(file));
-            let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
+            let boxed_stream: Pin<Box<dyn Stream<Item=Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
                 Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
-
-            return Ok((206, content_type, Some(total_length), Some(content_range), boxed_stream)); // ✅ Always return 206 if range exists
+            Ok((200, content_type, Some(total_length), None, boxed_stream))
         }
-
-        // If no `Range` header at all, return full file with `200 OK`
-        let file = tokio::fs::File::open(&video_path)
-            .await
-            .map_err(|e| format!("Error opening video file: {}", e))?;
-        let stream = ReaderStream::new(tokio::io::BufReader::new(file));
-        let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
-            Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
-
-        Ok((200, content_type, Some(total_length), None, boxed_stream))
     }
 }
