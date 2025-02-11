@@ -1,3 +1,5 @@
+use tokio::io::AsyncReadExt;
+use futures::StreamExt;
 use crate::config::config::DataSourceType;
 use crate::data_source::DataSource;
 use async_trait::async_trait;
@@ -8,13 +10,15 @@ use serde_json::Value;
 use std::cmp::Ordering;
 use std::error::Error;
 use std::fs;
-use std::io::Read;
+use std::io::{Read, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use bytes::Bytes;
 use futures::Stream;
+use tokio::io::AsyncSeekExt;
 use tokio::task;
 use tokio::task::JoinHandle;
+use tokio_util::io::ReaderStream;
 fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, priority_list: &[&'a str]) -> Ordering {
     if let (Some(idx_a), Some(idx_b)) = (
         priority_list.iter().position(|&x| x == a),
@@ -192,7 +196,111 @@ impl DataSource for LocalFileDataSource {
         file_map.await.unwrap()
     }
 
-    async fn stream_video(&self, folder_id: String, range: Option<String>) -> Result<(u16, String, Option<u64>, Option<String>, Pin<Box<dyn Stream<Item=Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>), String> {
-        todo!()
+    async fn stream_video(&self, folder_id: String, range: Option<String>) -> Result<
+        (
+            u16,    // HTTP status code
+            String, // content type
+            Option<u64>,  // content length (number of bytes being sent)
+            Option<String>, // Content-Range header value if applicable
+            Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>>
+        ),
+        String
+    > {
+        // 1. Compute the folder path.
+        let dir_path = self.root_dir.join(&folder_id);
+        // 2. Search for the first video file (assuming extension "mp4").
+        let mut video_file_path: Option<PathBuf> = None;
+        for entry in std::fs::read_dir(&dir_path).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            let path = entry.path();
+            if path.is_file() {
+                if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
+                    match ext.to_ascii_lowercase().as_str() {
+                        "mp4" | "webm" | "ogg" | "mov"=> {
+                            video_file_path = Some(path);
+                            break;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        let video_path = video_file_path.ok_or_else(|| format!("No video file found in folder {:?}", dir_path))?;
+
+        // 3. Open the video file asynchronously.
+        let file = tokio::fs::File::open(&video_path)
+            .await
+            .map_err(|e| format!("Error opening video file: {}", e))?;
+        let metadata = file.metadata()
+            .await
+            .map_err(|e| format!("Error getting metadata: {}", e))?;
+        let total_length = metadata.len();
+
+        // For simplicity, assume the MIME type is "video/mp4".
+        let content_type = "video/mp4".to_string();
+
+        // 4. If a Range header is provided, parse it.
+        if let Some(range_header) = range {
+            // Expecting header like "bytes=START-END"
+            if !range_header.starts_with("bytes=") {
+                return Err("Invalid range header".to_string());
+            }
+            let range_part = &range_header[6..]; // skip "bytes="
+            let parts: Vec<&str> = range_part.split('-').collect();
+            let start: u64 = parts.get(0)
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(0); // Fix: Default to 0 if start is missing
+
+            let end: u64 = if let Some(end_str) = parts.get(1) {
+                if end_str.is_empty() {
+                    total_length - 1
+                } else {
+                    end_str.parse().map_err(|_| "Invalid end range")?
+                }
+            } else {
+                total_length - 1
+            };
+
+            if start > end || end >= total_length {
+                return Err("Invalid range values".to_string());
+            }
+
+            let mut file = tokio::fs::File::open(&video_path)
+                .await
+                .map_err(|e| format!("Error reopening video file: {}", e))?;
+            file.seek(SeekFrom::Start(start))
+                .await
+                .map_err(|e| format!("Error seeking in file: {}", e))?;
+
+            let byte_count = end - start + 1;
+            let stream = ReaderStream::new(tokio::io::BufReader::new(file.take(byte_count)));
+            let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
+                Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
+
+            let content_range = format!("bytes {}-{}/{}", start, end, total_length);
+            return Ok((206, content_type, Some(byte_count), Some(content_range), boxed_stream)); // ✅ Always return 206
+        }
+
+        if range.is_some() {
+            let content_range = format!("bytes 0-{}/{}", total_length - 1, total_length);
+            let file = tokio::fs::File::open(&video_path)
+                .await
+                .map_err(|e| format!("Error opening video file: {}", e))?;
+            let stream = ReaderStream::new(tokio::io::BufReader::new(file));
+            let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
+                Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
+
+            return Ok((206, content_type, Some(total_length), Some(content_range), boxed_stream)); // ✅ Always return 206 if range exists
+        }
+
+        // If no `Range` header at all, return full file with `200 OK`
+        let file = tokio::fs::File::open(&video_path)
+            .await
+            .map_err(|e| format!("Error opening video file: {}", e))?;
+        let stream = ReaderStream::new(tokio::io::BufReader::new(file));
+        let boxed_stream: Pin<Box<dyn Stream<Item = Result<Bytes, Box<dyn Error + Send + Sync>>> + Send>> =
+            Box::pin(stream.map(|res| res.map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>)));
+
+        Ok((200, content_type, Some(total_length), None, boxed_stream))
     }
 }
