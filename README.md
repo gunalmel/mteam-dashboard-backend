@@ -50,13 +50,20 @@ The CSV file is parsed and transformed into data for a Plotly.js scatter plot (c
 - **action-groups.json**: Maps CSV action keywords to action group names (e.g., both "rosc_fentanyl_or_propofol" and "select adenosine" map to "Medication"). Actions in the same group share the same icon and filter label.
 - **action-groups-icons.json**: Maps action group names to icon file names (icons are bundled with the frontend).
 - **action-plot-stages.json**: Maps stage names from the CSV to display names for the plot.
-- **action-plot-settings.json**: Sets the ploty axis parameters.
+- **action-plot-settings.json**: Sets the plotly axis parameters.
 - **team-member-filter-settings.json**: Specifies the order of filter options for the Cognitive Load and Visual Attention plots. The filter names are derived from the snake_case JSON filenames (e.g., team_lead.json becomes "Team Lead"). Options matching the order in this file appear first; others are sorted alphabetically.
 - **visual-attention-plot-settings.json**: Defines the colors for the data series in the Visual Attention plot.
 
 ## Data File Organization
 
-The json data files for cognitive load and visual attention plots must be named in snake case. e.g., team_lead.json will be used to produce the "Team Lead" filter option in the plot. In team-member-filter-settings.json, those derived filter option names should be used to dictate the order of filter options. (see Plot Configuration section above)
+The cognitive load and visual attention file names must match each other. The file names are used to generate filter options and then to match those files. 
+e.g.: Instead of data/09182024/cognitive-load/team_lead.json and data/09182024/visual-attention/team_lead.json, you use data/09182024/visual-attention/team_ld.json then the filter option "Team Lead" will be generated from cognitive-load/team_lead.json file and selecting that filter will not match visual-attention/team_ld.json file so visual attention plot will show nothing.
+
+The json data files for cognitive load and visual attention plots must be named in snake case. e.g., team_lead.json will 
+be used to produce the "Team Lead" filter option in the plot. In team-member-filter-settings.json, those derived filter 
+option names should be used to dictate the order of filter options. (see Plot Configuration section above)
+
+In JSON files don't use NaN as a value, use null instead. Also, pay attention to json files containing valid json data. Run your data through a json validator otherwise the file couldn't be parsed correctly and deserialized into expected data structures. 
 
 ### Local File System
 ```
@@ -226,4 +233,18 @@ Run tests for a specific package:
 
 ```shell
 cargo test -p mteam-dashboard-plotly-processor
+```
+
+### Cross Compiling
+
+If you are to build the application for a different platform, you can use the `cross` crate. Install it with:
+
+```shell
+cargo install cross
+```
+
+Then, build the application for a specific target, e.g. building on Mac Os X for Linux x86_64 (you will need to add openssl to your Cargo.toml dependencies):
+
+```shell
+cross build --target=x86_64-unknown-linux-gnu --release
 ```

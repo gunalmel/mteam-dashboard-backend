@@ -12,6 +12,8 @@ You will need to set a deployment directory on the target machine. eg.: /opt/mte
 
 ```shell
 scp ./target/debug/mteam-dashboard-backend iscprox4@iscprox4.eecs.umich.edu:/opt/mteam-dashboard/
+#OR
+scp ./target/x86_64-unknown-linux-gnu/release/mteam-dashboard-backend iscprox4@iscprox4.eecs.umich.edu:/opt/mteam-dashboard/
 ```
 Also, need to copy the configuration files, and you need to update the config files (see README.md for more details).
 

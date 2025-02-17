@@ -223,13 +223,18 @@ async fn visual_attention(path: Path<(String, String)>, context: Data<AppContext
     };
     let window_duration_secs = context.plotly_config.visual_attention_plot_settings.window_size_secs;
 
-    let visual_attention_plot_data = visual_attention::transformers::to_plotly_data(&mut file_reader, window_duration_secs, &context.plotly_config);
-
-    match to_string(&visual_attention_plot_data) {
-        Ok(json) => HttpResponse::Ok()
-            .content_type("application/json")
-            .body(json),
-        Err(_) => HttpResponse::InternalServerError().body("Failed to serialize result"),
+    match visual_attention::transformers::to_plotly_data(&mut file_reader, window_duration_secs, &context.plotly_config) {
+        Ok(visual_attention_plot_data) => {
+            match to_string(&visual_attention_plot_data) {
+                Ok(json) => HttpResponse::Ok()
+                    .content_type("application/json")
+                    .body(json),
+                Err(_) => HttpResponse::InternalServerError().body("Failed to serialize result"),
+            }
+        }
+        Err(_) => HttpResponse::InternalServerError().json(json!({
+            "error": "Source json data file couldn't be parsed."
+        })),
     }
 }
 

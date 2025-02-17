@@ -5,11 +5,11 @@ use std::collections::HashMap;
 use std::io;
 use std::io::Read;
 
-pub fn to_plotly_data(reader: &mut impl Read, window_duration_secs: u32, config: &PlotlyConfig) -> Vec<VisualAttentionCategory> {
+pub fn to_plotly_data(reader: &mut impl Read, window_duration_secs: u32, config: &PlotlyConfig) -> Result<Vec<VisualAttentionCategory>, io::Error> {
     let ref mut category_map = HashMap::new();
 
     process_visual_attention_data(reader, window_duration_secs)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e)).unwrap() // Convert String error to io::Error
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))? // Convert String error to io::Error
         .for_each(|(category, time, ratio)| {
             let point = category_map.entry(category.clone()).or_insert_with(|| VisualAttentionCategory {
                 x: vec![],
@@ -30,5 +30,5 @@ pub fn to_plotly_data(reader: &mut impl Read, window_duration_secs: u32, config:
             ordered_categories.push(category_data);
         }
     }
-    ordered_categories
+    Ok(ordered_categories)
 }
