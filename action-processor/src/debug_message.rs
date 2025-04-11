@@ -1,6 +1,9 @@
-//If you want to use the macro in any module without the declaration below and then refer to it 
-// with use debug_message::print_debug_message, you can use the #[macro_export] attribute
-//otherwise you need to export it at the bottom of the ile with: pub(crate) use print_debug_message;
+// If you want the macro to be usable anywhere without explicitly importing it, use #[macro_export].
+// This makes it globally available throughout the crate (and from other crates if it's a library).
+// Without #[macro_export], you must explicitly export and import the macro, e.g.:
+// pub(crate) use print_debug_message; in lib.rs or mod.rs
+// and then use crate::print_debug_message; wherever you want to use it.
+
 #[macro_export]
 macro_rules! print_debug_message {
     ($($arg:tt)*) => {
