@@ -41,12 +41,12 @@ fn ordering_by_priority_list_then_alphabetically<'a>(a: &'a str, b: &'a str, pri
 ///
 /// ```text
 /// /a/b/topmost_dir/         <-- root_dir
-///    ├── 010125/         <-- “main folder” (e.g. a date folder)
+///    ├── 01012025/         <-- “main folder” (e.g. a date folder)
 ///    │      ├── cognitive-load/   <-- category folder holding JSON files
 ///    │      │      ├── a_file.json
 ///    │      │      └── b_file.json
 ///    │      └── some.csv     <-- CSV (or text) file in the date folder
-///    └── 010225/
+///    └── 01022025/
 ///           └── visual-attention/
 ///                  ├── ...
 /// ```
